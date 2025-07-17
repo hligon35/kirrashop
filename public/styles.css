@@ -152,13 +152,16 @@ body {
 /* Section Headers */
 .section-header {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
+    text-align: center;
     margin-bottom: 25px;
     background: var(--card-bg);
     padding: 20px;
     border-radius: 15px;
     backdrop-filter: blur(10px);
+    gap: 15px;
 }
 
 .section-header h2 {
@@ -734,6 +737,8 @@ textarea::placeholder {
 
     .section-header {
         flex-direction: column;
+        justify-content: center;
+        align-items: center;
         gap: 15px;
         text-align: center;
     }
@@ -878,8 +883,10 @@ textarea::placeholder {
 /* Gallery Enhancement Styles */
 .section-header {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
+    text-align: center;
     margin-bottom: 30px;
     flex-wrap: wrap;
     gap: 15px;
@@ -903,7 +910,10 @@ textarea::placeholder {
 @media (max-width: 768px) {
     .section-header {
         flex-direction: column;
-        align-items: stretch;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        gap: 15px;
     }
     
     .gallery-controls {
