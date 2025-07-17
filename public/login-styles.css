@@ -1,0 +1,360 @@
+/* Login Page Styles */
+:root {
+    --primary-color: #FF69B4;
+    --secondary-color: #32CD32;
+    --accent-color: #FF1493;
+    --gold-color: #FFD700;
+    --dark-bg: #1a1a2e;
+    --card-bg: rgba(255, 255, 255, 0.1);
+    --text-light: #f0f0f0;
+    --text-dark: #333;
+    --danger: #ff6b6b;
+    --success: #51cf66;
+    --warning: #ffd43b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #FF69B4, #32CD32, #FFD700);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.login-form {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    animation: slideIn 0.6s ease;
+}
+
+@keyframes slideIn {
+    from { 
+        transform: translateY(-50px) scale(0.9); 
+        opacity: 0; 
+    }
+    to { 
+        transform: translateY(0) scale(1); 
+        opacity: 1; 
+    }
+}
+
+.logo-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo-section h1 {
+    color: var(--accent-color);
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.logo-section p {
+    color: var(--text-dark);
+    font-size: 1.1rem;
+    opacity: 0.8;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group label i {
+    color: var(--accent-color);
+    width: 16px;
+}
+
+.form-group input {
+    padding: 15px;
+    border: 2px solid rgba(255, 20, 147, 0.2);
+    border-radius: 12px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--text-dark);
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.phone-input {
+    border: 2px solid rgba(255, 20, 147, 0.2);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    overflow: hidden;
+}
+
+.phone-prefix {
+    background: rgba(255, 20, 147, 0.1);
+    padding: 15px 12px;
+    font-weight: bold;
+    color: var(--text-dark);
+    border-right: 1px solid rgba(255, 20, 147, 0.2);
+    font-family: monospace;
+    letter-spacing: 1px;
+}
+
+.phone-input input {
+    border: none !important;
+    border-radius: 0 !important;
+    flex: 1;
+    margin: 0;
+}
+
+.clear-btn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: rgba(51, 51, 51, 0.5);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.clear-btn:hover {
+    background: rgba(255, 20, 147, 0.1);
+    color: var(--accent-color);
+}
+
+.input-hint {
+    color: rgba(51, 51, 51, 0.6);
+    font-size: 0.8rem;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.1);
+    transform: scale(1.02);
+}
+
+.form-group input::placeholder {
+    color: rgba(51, 51, 51, 0.6);
+}
+
+.btn {
+    padding: 15px 25px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    margin: 5px 0;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 20, 147, 0.4);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, var(--secondary-color), #28a745);
+    color: white;
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(50, 205, 50, 0.4);
+}
+
+.btn-link {
+    background: transparent;
+    color: var(--text-dark);
+    text-decoration: underline;
+    padding: 10px;
+}
+
+.btn-link:hover {
+    color: var(--accent-color);
+}
+
+.verification-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.verification-header i {
+    font-size: 3rem;
+    color: var(--secondary-color);
+    margin-bottom: 15px;
+}
+
+.verification-header h3 {
+    color: var(--text-dark);
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+}
+
+.verification-header p {
+    color: var(--text-dark);
+    opacity: 0.8;
+    font-size: 0.95rem;
+}
+
+#maskedPhone {
+    font-weight: 600;
+    color: var(--accent-color);
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 30px;
+}
+
+.loading-spinner i {
+    font-size: 2.5rem;
+    color: var(--accent-color);
+    margin-bottom: 15px;
+}
+
+.loading-spinner p {
+    color: var(--text-dark);
+    font-size: 1.1rem;
+}
+
+.error-message {
+    background: linear-gradient(135deg, #ffebee, #ffcdd2);
+    border: 2px solid var(--danger);
+    border-radius: 12px;
+    padding: 15px;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #c62828;
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.success-message {
+    background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+    border: 2px solid var(--success);
+    border-radius: 12px;
+    padding: 15px;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #2e7d32;
+    animation: slideIn 0.5s ease;
+}
+
+.error-message i,
+.success-message i {
+    font-size: 1.2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .login-container {
+        padding: 15px;
+    }
+    
+    .login-form {
+        padding: 30px 25px;
+    }
+    
+    .logo-section h1 {
+        font-size: 1.8rem;
+    }
+    
+    .btn {
+        padding: 12px 20px;
+        font-size: 0.95rem;
+    }
+}
+
+/* Additional animations */
+.form-group input:invalid {
+    animation: inputError 0.3s ease;
+}
+
+@keyframes inputError {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+}
+
+/* Phone number formatting */
+#phoneNumber {
+    font-family: monospace;
+    letter-spacing: 1px;
+}
+
+/* Verification code input styling */
+#verificationCode {
+    text-align: center;
+    font-size: 1.5rem;
+    font-family: monospace;
+    letter-spacing: 8px;
+    font-weight: bold;
+}

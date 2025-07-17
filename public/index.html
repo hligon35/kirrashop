@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kirra's Nail Studio - Business Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Grunge+Display:wght@400;700&family=Rock+Salt&family=Fredoka+One&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-section">
+                <h1>Kirra's Nail Studio</h1>
+                <p class="tagline">Where Nails Meet Art & Music</p>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="appointments">Appointments</button>
+            <button class="tab-btn" data-tab="finances">Finances</button>
+            <button class="tab-btn" data-tab="customers">Customers</button>
+            <button class="tab-btn" data-tab="promos">Promos</button>
+            <button class="tab-btn" data-tab="gallery">Gallery</button>
+            <button class="tab-btn" data-tab="communications">Messages</button>
+        </nav>
+
+        <!-- Appointments Tab -->
+        <div class="tab-content active" id="appointments">
+            <div class="section-header">
+                <h2><i class="fas fa-calendar-alt"></i> Appointment Management</h2>
+                <button class="btn btn-primary" onclick="showAddAppointment()">
+                    <i class="fas fa-plus"></i> New Appointment
+                </button>
+            </div>
+            
+            <div class="appointments-grid" id="appointmentsList">
+                <!-- Appointments will be loaded here -->
+            </div>
+
+            <!-- Add Appointment Modal -->
+            <div class="modal" id="appointmentModal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('appointmentModal')">&times;</span>
+                    <h3>Schedule New Appointment</h3>
+                    <form id="appointmentForm">
+                        <input type="text" id="clientName" placeholder="Client Name" required>
+                        <input type="email" id="clientEmail" placeholder="Email">
+                        <input type="tel" id="clientPhone" placeholder="Phone Number">
+                        <input type="date" id="appointmentDate" required>
+                        <input type="time" id="appointmentTime" required>
+                        <select id="serviceType" required>
+                            <option value="">Select Service</option>
+                            <option value="manicure">Classic Manicure - $25</option>
+                            <option value="pedicure">Pedicure - $35</option>
+                            <option value="gel">Gel Nails - $45</option>
+                            <option value="acrylic">Acrylic Set - $55</option>
+                            <option value="nail-art">Custom Nail Art - $65</option>
+                            <option value="mushroom-design">Mushroom Special - $70</option>
+                        </select>
+                        <textarea id="notes" placeholder="Special requests or notes"></textarea>
+                        <button type="submit" class="btn btn-primary">Book Appointment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Finances Tab -->
+        <div class="tab-content" id="finances">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-line"></i> Financial Dashboard</h2>
+            </div>
+            
+            <div class="finance-cards">
+                <div class="finance-card revenue">
+                    <h3><i class="fas fa-dollar-sign"></i> Total Revenue</h3>
+                    <div class="amount" id="totalRevenue">$0</div>
+                </div>
+                <div class="finance-card expenses">
+                    <h3><i class="fas fa-receipt"></i> Expenses</h3>
+                    <div class="amount" id="totalExpenses">$0</div>
+                </div>
+                <div class="finance-card balance">
+                    <h3><i class="fas fa-balance-scale"></i> Net Balance</h3>
+                    <div class="amount" id="netBalance">$0</div>
+                </div>
+            </div>
+
+            <div class="transaction-section">
+                <h3>Add Transaction</h3>
+                <form id="transactionForm">
+                    <select id="transactionType" required>
+                        <option value="">Transaction Type</option>
+                        <option value="revenue">Revenue</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                    <input type="number" id="transactionAmount" placeholder="Amount" step="0.01" required>
+                    <input type="text" id="transactionDescription" placeholder="Description" required>
+                    <button type="submit" class="btn btn-primary">Add Transaction</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Customers Tab -->
+        <div class="tab-content" id="customers">
+            <div class="section-header">
+                <h2><i class="fas fa-users"></i> Customer Management</h2>
+                <button class="btn btn-primary" onclick="showAddCustomer()">
+                    <i class="fas fa-user-plus"></i> Add Customer
+                </button>
+            </div>
+            
+            <div class="customers-grid" id="customersList">
+                <!-- Customers will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Promos Tab -->
+        <div class="tab-content" id="promos">
+            <div class="section-header">
+                <h2><i class="fas fa-tags"></i> Promo Codes & Special Offers</h2>
+                <button class="btn btn-primary" onclick="showAddPromo()">
+                    <i class="fas fa-plus"></i> Create Promo
+                </button>
+            </div>
+            
+            <div class="promos-grid" id="promosList">
+                <!-- Promo codes will be loaded here -->
+            </div>
+
+            <!-- Add Promo Modal -->
+            <div class="modal" id="promoModal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('promoModal')">&times;</span>
+                    <h3>Create Promo Code</h3>
+                    <form id="promoForm">
+                        <input type="text" id="promoCode" placeholder="Promo Code (e.g., MUSHROOM20)" required>
+                        <input type="number" id="discountPercent" placeholder="Discount %" min="1" max="100" required>
+                        <input type="date" id="expiryDate" required>
+                        <textarea id="promoDescription" placeholder="Description"></textarea>
+                        <button type="submit" class="btn btn-primary">Create Promo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Tab -->
+        <div class="tab-content" id="gallery">
+            <div class="section-header">
+                <h2><i class="fas fa-images"></i> Nail Art Gallery</h2>
+                <div class="gallery-controls">
+                    <button class="btn btn-primary" onclick="showAddMedia()">
+                        <i class="fas fa-plus"></i> Add Media
+                    </button>
+                </div>
+            </div>
+            
+            <div class="gallery-section">
+                <h3><i class="fas fa-camera"></i> Photo Gallery</h3>
+                <div class="gallery-grid" id="photoGallery">
+                    <!-- Photos will be loaded here -->
+                </div>
+            </div>
+
+            <div class="gallery-section">
+                <h3><i class="fas fa-video"></i> Video Gallery</h3>
+                <div class="gallery-grid" id="videoGallery">
+                    <!-- Videos will be loaded here -->
+                </div>
+            </div>
+        </div>
+                        <p>Customer Testimonials</p>
+                    </div>
+                    <div class="video-placeholder">
+                        <i class="fas fa-play-circle"></i>
+                        <p>Studio Vibes</p>
+                    </div>
+                    <div class="video-placeholder">
+                        <i class="fas fa-play-circle"></i>
+                        <p>Behind the Scenes</p>
+                    </div>
+                    <div class="video-placeholder">
+                        <i class="fas fa-play-circle"></i>
+                        <p>Music & Nails Session</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Communications Tab -->
+        <div class="tab-content" id="communications">
+            <div class="section-header">
+                <h2><i class="fas fa-comments"></i> Customer Communications</h2>
+                <button class="btn btn-primary" onclick="showSendMessage()">
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </button>
+            </div>
+            
+            <div class="communications-list" id="communicationsList">
+                <!-- Communications will be loaded here -->
+            </div>
+
+            <!-- Send Message Modal -->
+            <div class="modal" id="messageModal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('messageModal')">&times;</span>
+                    <h3>Send Message</h3>
+                    <form id="messageForm">
+                        <select id="messageType" required>
+                            <option value="">Message Type</option>
+                            <option value="reminder">Appointment Reminder</option>
+                            <option value="promo">Promotional Offer</option>
+                            <option value="follow-up">Follow Up</option>
+                            <option value="custom">Custom Message</option>
+                        </select>
+                        <input type="email" id="recipientEmail" placeholder="Recipient Email" required>
+                        <input type="text" id="messageSubject" placeholder="Subject" required>
+                        <textarea id="messageBody" placeholder="Message" rows="5" required></textarea>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Add Media Modal -->
+            <div class="modal" id="mediaModal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('mediaModal')">&times;</span>
+                    <h3><i class="fas fa-plus"></i> Add Media</h3>
+                    
+                    <!-- Media Type Selection -->
+                    <div class="form-group">
+                        <label>Media Type:</label>
+                        <div class="media-type-options">
+                            <button type="button" class="btn btn-primary media-type-btn active" onclick="selectMediaType('photo')" id="photoTypeBtn">
+                                <i class="fas fa-camera"></i> Photo
+                            </button>
+                            <button type="button" class="btn btn-secondary media-type-btn" onclick="selectMediaType('video')" id="videoTypeBtn">
+                                <i class="fas fa-video"></i> Video
+                            </button>
+                        </div>
+                    </div>
+
+                    <form onsubmit="addMedia(event)" id="mediaForm">
+                        <div class="form-group">
+                            <label id="sourceLabel">Photo Source:</label>
+                            <div class="media-source-options">
+                                <button type="button" class="btn btn-secondary" onclick="selectMediaSource('camera')">
+                                    <i class="fas fa-camera"></i> Camera
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="selectMediaSource('gallery')">
+                                    <i class="fas fa-images"></i> Gallery
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="selectMediaSource('computer')">
+                                    <i class="fas fa-desktop"></i> Computer
+                                </button>
+                            </div>
+                            <input type="file" id="mediaInput" accept="image/*" style="display: none;" onchange="previewMedia(event)">
+                        </div>
+                        
+                        <div class="form-group">
+                            <div id="mediaPreview" class="media-preview empty"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="mediaCaption">Caption:</label>
+                            <textarea id="mediaCaption" placeholder="Add a caption for your media..." rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Post to Social Media:</label>
+                            <div class="social-media-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="postInstagram" checked>
+                                    <i class="fab fa-instagram"></i> Instagram
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="postTiktok">
+                                    <i class="fab fa-tiktok"></i> TikTok
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="postFacebook">
+                                    <i class="fab fa-facebook"></i> Facebook
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="postTwitter">
+                                    <i class="fab fa-x-twitter"></i> X (Twitter)
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="postSnapchat">
+                                    <i class="fab fa-snapchat"></i> Snapchat
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" id="uploadBtn">
+                            <i class="fas fa-upload"></i> Upload Photo
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
