@@ -9,6 +9,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Grunge+Display:wght@400;700&family=Rock+Salt&family=Fredoka+One&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Theme">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+    
     <div class="container">
         <!-- Header -->
         <header class="header">
@@ -18,14 +23,28 @@
             </div>
         </header>
 
+        <!-- Login Access Section -->
+        <div class="login-access-section">
+            <div class="login-buttons">
+                <a href="customer-login.html" class="btn btn-purple login-access-btn">
+                    <i class="fas fa-user"></i> Customer Portal
+                </a>
+                <a href="login.html" class="btn btn-black login-access-btn">
+                    <i class="fas fa-user-shield"></i> Admin Portal
+                </a>
+            </div>
+            <p class="login-subtitle">Access your account or manage the studio</p>
+        </div>
+
         <!-- Navigation -->
         <nav class="nav-tabs">
             <button class="tab-btn active" data-tab="appointments">Appointments</button>
+            <button class="tab-btn" data-tab="payments">Payments</button>
             <button class="tab-btn" data-tab="finances">Finances</button>
             <button class="tab-btn" data-tab="customers">Customers</button>
+            <button class="tab-btn" data-tab="chat">Chat</button>
             <button class="tab-btn" data-tab="promos">Promos</button>
             <button class="tab-btn" data-tab="gallery">Gallery</button>
-            <button class="tab-btn" data-tab="communications">Messages</button>
         </nav>
 
         <!-- Appointments Tab -->
@@ -52,7 +71,7 @@
                         <input type="tel" id="clientPhone" placeholder="Phone Number">
                         <input type="date" id="appointmentDate" required>
                         <input type="time" id="appointmentTime" required>
-                        <select id="serviceType" required>
+                        <select id="serviceType" required onchange="updateServicePrice()">
                             <option value="">Select Service</option>
                             <option value="manicure">Classic Manicure - $25</option>
                             <option value="pedicure">Pedicure - $35</option>
@@ -61,9 +80,231 @@
                             <option value="nail-art">Custom Nail Art - $65</option>
                             <option value="mushroom-design">Mushroom Special - $70</option>
                         </select>
+                        
+                        <!-- Payment Information Section -->
+                        <div class="payment-section">
+                            <h4><i class="fas fa-credit-card"></i> Payment Details</h4>
+                            <input type="number" id="servicePrice" placeholder="Service Price ($)" step="0.01" min="0">
+                            <select id="paymentStatus">
+                                <option value="pending">Payment Pending</option>
+                                <option value="partial">Partial Payment</option>
+                                <option value="paid">Fully Paid</option>
+                                <option value="overdue">Overdue</option>
+                            </select>
+                            <input type="number" id="amountPaid" placeholder="Amount Paid ($)" step="0.01" min="0" value="0">
+                            <select id="paymentMethod">
+                                <option value="">Payment Method</option>
+                                <option value="cash">Cash</option>
+                                <option value="card">Credit/Debit Card</option>
+                                <option value="apple-pay">Apple Pay</option>
+                                <option value="cashapp">CashApp</option>
+                                <option value="venmo">Venmo</option>
+                                <option value="zelle">Zelle</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <input type="text" id="paymentReference" placeholder="Payment Reference/Transaction ID">
+                            <textarea id="paymentNotes" placeholder="Payment notes or special arrangements"></textarea>
+                        </div>
+                        
                         <textarea id="notes" placeholder="Special requests or notes"></textarea>
                         <button type="submit" class="btn btn-primary">Book Appointment</button>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments Tab -->
+        <div class="tab-content" id="payments">
+            <div class="section-header">
+                <h2><i class="fas fa-credit-card"></i> Payment Management</h2>
+                <div class="header-actions">
+                    <button class="btn btn-success" onclick="showPaymentIntegrations()">
+                        <i class="fas fa-link"></i> Payment Integrations
+                    </button>
+                    <button class="btn btn-warning" onclick="sendPaymentReminders()">
+                        <i class="fas fa-bell"></i> Send Reminders
+                    </button>
+                </div>
+            </div>
+
+            <!-- Payment Overview Cards -->
+            <div class="payment-overview">
+                <div class="payment-card pending">
+                    <h3><i class="fas fa-clock"></i> Pending Payments</h3>
+                    <div class="amount" id="pendingPayments">$0</div>
+                    <div class="count" id="pendingCount">0 appointments</div>
+                </div>
+                <div class="payment-card overdue">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Overdue Payments</h3>
+                    <div class="amount" id="overduePayments">$0</div>
+                    <div class="count" id="overdueCount">0 appointments</div>
+                </div>
+                <div class="payment-card partial">
+                    <h3><i class="fas fa-coins"></i> Partial Payments</h3>
+                    <div class="amount" id="partialPayments">$0</div>
+                    <div class="count" id="partialCount">0 appointments</div>
+                </div>
+                <div class="payment-card paid">
+                    <h3><i class="fas fa-check-circle"></i> Paid Today</h3>
+                    <div class="amount" id="paidToday">$0</div>
+                    <div class="count" id="paidTodayCount">0 appointments</div>
+                </div>
+            </div>
+
+            <!-- Payment Filters -->
+            <div class="payment-filters">
+                <select id="paymentStatusFilter">
+                    <option value="all">All Payments</option>
+                    <option value="pending">Pending</option>
+                    <option value="partial">Partial</option>
+                    <option value="overdue">Overdue</option>
+                    <option value="paid">Paid</option>
+                </select>
+                <select id="paymentMethodFilter">
+                    <option value="all">All Methods</option>
+                    <option value="cash">Cash</option>
+                    <option value="card">Card</option>
+                    <option value="apple-pay">Apple Pay</option>
+                    <option value="cashapp">CashApp</option>
+                    <option value="venmo">Venmo</option>
+                    <option value="zelle">Zelle</option>
+                </select>
+                <input type="date" id="paymentDateFilter">
+                <button class="btn btn-purple" onclick="filterPayments()">
+                    <i class="fas fa-filter"></i> Apply Filters
+                </button>
+            </div>
+
+            <!-- Payments List -->
+            <div class="payments-grid" id="paymentsList">
+                <!-- Payments will be loaded here -->
+            </div>
+
+            <!-- Payment Confirmation Modal -->
+            <div class="modal" id="paymentModal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('paymentModal')">&times;</span>
+                    <h3 id="paymentModalTitle">Confirm Payment</h3>
+                    <form id="paymentForm">
+                        <input type="hidden" id="paymentAppointmentId">
+                        <div class="payment-info">
+                            <div class="client-info">
+                                <h4 id="paymentClientName">Client Name</h4>
+                                <p id="paymentServiceDetails">Service details</p>
+                                <p class="payment-amount" id="paymentTotalAmount">Total: $0</p>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-confirmation">
+                            <label>Payment Method:</label>
+                            <select id="confirmPaymentMethod" required>
+                                <option value="">Select Payment Method</option>
+                                <option value="cash">Cash</option>
+                                <option value="card">Credit/Debit Card</option>
+                                <option value="apple-pay">Apple Pay</option>
+                                <option value="cashapp">CashApp</option>
+                                <option value="venmo">Venmo</option>
+                                <option value="zelle">Zelle</option>
+                                <option value="other">Other</option>
+                            </select>
+                            
+                            <label>Amount Received:</label>
+                            <input type="number" id="confirmAmountPaid" step="0.01" min="0" required>
+                            
+                            <label>Payment Status:</label>
+                            <select id="confirmPaymentStatus" required>
+                                <option value="paid">Fully Paid</option>
+                                <option value="partial">Partial Payment</option>
+                                <option value="pending">Still Pending</option>
+                            </select>
+                            
+                            <label>Transaction Reference:</label>
+                            <input type="text" id="confirmPaymentReference" placeholder="Transaction ID or reference">
+                            
+                            <label>Payment Notes:</label>
+                            <textarea id="confirmPaymentNotes" placeholder="Additional payment notes"></textarea>
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-warning" onclick="sendPaymentReminder(document.getElementById('paymentAppointmentId').value)">
+                                <i class="fas fa-bell"></i> Send Reminder
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check"></i> Confirm Payment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Payment Integrations Modal -->
+            <div class="modal" id="paymentIntegrationsModal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('paymentIntegrationsModal')">&times;</span>
+                    <h3><i class="fas fa-link"></i> Payment Integrations</h3>
+                    
+                    <div class="integration-cards">
+                        <div class="integration-card apple-pay">
+                            <div class="integration-header">
+                                <i class="fab fa-apple"></i>
+                                <h4>Apple Pay</h4>
+                                <span class="status" id="applePayStatus">Not Connected</span>
+                            </div>
+                            <p>Accept payments directly through Apple Pay</p>
+                            <button class="btn btn-black" onclick="setupApplePay()">
+                                <i class="fas fa-cog"></i> Setup Apple Pay
+                            </button>
+                        </div>
+                        
+                        <div class="integration-card cashapp">
+                            <div class="integration-header">
+                                <i class="fas fa-dollar-sign"></i>
+                                <h4>CashApp</h4>
+                                <span class="status" id="cashappStatus">Not Connected</span>
+                            </div>
+                            <p>Receive payments via CashApp</p>
+                            <input type="text" id="cashappHandle" placeholder="Your CashApp handle ($username)">
+                            <button class="btn btn-success" onclick="setupCashApp()">
+                                <i class="fas fa-link"></i> Connect CashApp
+                            </button>
+                        </div>
+                        
+                        <div class="integration-card venmo">
+                            <div class="integration-header">
+                                <i class="fas fa-credit-card"></i>
+                                <h4>Venmo</h4>
+                                <span class="status" id="venmoStatus">Not Connected</span>
+                            </div>
+                            <p>Accept payments through Venmo</p>
+                            <input type="text" id="venmoHandle" placeholder="Your Venmo username">
+                            <button class="btn btn-lavender" onclick="setupVenmo()">
+                                <i class="fas fa-link"></i> Connect Venmo
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="integration-settings">
+                        <h4>Payment Settings</h4>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="autoReminders"> 
+                                Enable automatic payment reminders
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>Reminder frequency:</label>
+                            <select id="reminderFrequency">
+                                <option value="1">Daily</option>
+                                <option value="3">Every 3 days</option>
+                                <option value="7" selected>Weekly</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>Payment due days:</label>
+                            <input type="number" id="paymentDueDays" value="7" min="1" max="30">
+                            <span>days after appointment</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -116,15 +357,160 @@
             <div class="customers-grid" id="customersList">
                 <!-- Customers will be loaded here -->
             </div>
+
+            <!-- Add Customer Modal -->
+            <div class="modal" id="customerModal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('customerModal')">&times;</span>
+                    <h3>Add New Customer</h3>
+                    <form id="customerForm">
+                        <input type="text" id="customerName" placeholder="Customer Name" required>
+                        <input type="email" id="customerEmail" placeholder="Email Address" required>
+                        <input type="tel" id="customerPhone" placeholder="Phone Number">
+                        <button type="submit" class="btn btn-primary">Add Customer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Tab -->
+        <div class="tab-content" id="chat">
+            <div class="chat-container">
+                <!-- Chat Sidebar -->
+                <div class="chat-sidebar">
+                    <div class="chat-header">
+                        <h3><i class="fas fa-comments"></i> Conversations</h3>
+                        <button class="btn btn-success btn-small" onclick="startNewChat()">
+                            <i class="fas fa-plus"></i> New Chat
+                        </button>
+                    </div>
+                    
+                    <!-- Search Conversations -->
+                    <div class="chat-search">
+                        <input type="text" id="chatSearch" placeholder="Search conversations..." onkeyup="searchChats()">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    
+                    <!-- Chat List -->
+                    <div class="chat-list" id="chatList">
+                        <!-- Chat conversations will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Chat Main Area -->
+                <div class="chat-main">
+                    <!-- Chat Messages Area -->
+                    <div class="chat-messages-container">
+                        <div class="chat-messages-header" id="chatHeader">
+                            <div class="chat-participant-info">
+                                <div class="participant-avatar" id="participantAvatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="participant-details">
+                                    <h4 id="participantName">Select a conversation</h4>
+                                    <p id="participantStatus">or start a new chat</p>
+                                </div>
+                            </div>
+                            <div class="chat-actions">
+                                <button class="btn btn-purple btn-small" onclick="showChatDetails()" id="chatDetailsBtn" style="display: none;">
+                                    <i class="fas fa-info-circle"></i> Details
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="no-chat-selected">
+                                <i class="fas fa-comments"></i>
+                                <h3>Welcome to Chat</h3>
+                                <p>Select a conversation from the sidebar or start a new chat with your customers.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat Input Area -->
+                    <div class="chat-input-container" id="chatInputContainer" style="display: none;">
+                        <form id="chatForm" onsubmit="sendMessage(event)">
+                            <div class="chat-input-wrapper">
+                                <button type="button" class="attachment-btn" onclick="attachFile()">
+                                    <i class="fas fa-paperclip"></i>
+                                </button>
+                                <input type="text" id="messageInput" placeholder="Type your message..." required>
+                                <button type="submit" class="send-btn">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- New Chat Modal -->
+            <div class="modal" id="newChatModal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('newChatModal')">&times;</span>
+                    <h3><i class="fas fa-comments"></i> Start New Conversation</h3>
+                    <form id="newChatForm" onsubmit="createNewChat(event)">
+                        <div class="recipient-selection">
+                            <label>Select Customer:</label>
+                            <select id="chatRecipient" required>
+                                <option value="">Choose a customer...</option>
+                                <!-- Customer options will be loaded here -->
+                            </select>
+                            <div class="recipient-actions">
+                                <button type="button" class="btn btn-secondary btn-small" onclick="showAddCustomer()">
+                                    <i class="fas fa-user-plus"></i> Add New Customer
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-type-selection">
+                            <label>Chat Type:</label>
+                            <select id="chatType">
+                                <option value="general">General Chat</option>
+                                <option value="appointment">Appointment Related</option>
+                                <option value="payment">Payment Discussion</option>
+                                <option value="support">Customer Support</option>
+                            </select>
+                        </div>
+                        
+                        <div class="initial-message">
+                            <label>Initial Message (optional):</label>
+                            <textarea id="initialMessage" placeholder="Start the conversation with a message..."></textarea>
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-comments"></i> Start Chat
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Chat Details Modal -->
+            <div class="modal" id="chatDetailsModal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('chatDetailsModal')">&times;</span>
+                    <h3><i class="fas fa-info-circle"></i> Chat Details</h3>
+                    <div class="chat-details-content" id="chatDetailsContent">
+                        <!-- Chat details will be loaded here -->
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Promos Tab -->
         <div class="tab-content" id="promos">
             <div class="section-header">
                 <h2><i class="fas fa-tags"></i> Promo Codes & Special Offers</h2>
-                <button class="btn btn-primary" onclick="showAddPromo()">
-                    <i class="fas fa-plus"></i> Create Promo
-                </button>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="showAddPromo()">
+                        <i class="fas fa-plus"></i> Create Promo
+                    </button>
+                    <button class="btn btn-secondary" onclick="showSendPromo()">
+                        <i class="fas fa-paper-plane"></i> Send Promo
+                    </button>
+                </div>
             </div>
             
             <div class="promos-grid" id="promosList">
@@ -139,9 +525,83 @@
                     <form id="promoForm">
                         <input type="text" id="promoCode" placeholder="Promo Code (e.g., MUSHROOM20)" required>
                         <input type="number" id="discountPercent" placeholder="Discount %" min="1" max="100" required>
-                        <input type="date" id="expiryDate" required>
+                        
+                        <div class="form-group">
+                            <label for="expiryType">Expiry Type:</label>
+                            <select id="expiryType" onchange="toggleExpiryOptions()">
+                                <option value="date">Set Expiry Date</option>
+                                <option value="permanent">Permanent Code</option>
+                            </select>
+                        </div>
+                        
+                        <div id="expiryDateGroup" class="form-group">
+                            <label for="expiryDate">Expiry Date:</label>
+                            <input type="date" id="expiryDate">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="customerSpecific">Customer Assignment:</label>
+                            <select id="customerSpecific" onchange="toggleCustomerSelection()">
+                                <option value="general">General Use Code</option>
+                                <option value="specific">Specific Customer</option>
+                            </select>
+                        </div>
+                        
+                        <div id="customerSelection" class="form-group" style="display: none;">
+                            <label for="specificCustomer">Select Customer:</label>
+                            <select id="specificCustomer">
+                                <option value="">Select a customer...</option>
+                            </select>
+                        </div>
+                        
                         <textarea id="promoDescription" placeholder="Description"></textarea>
                         <button type="submit" class="btn btn-primary">Create Promo</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Send Promo Modal -->
+            <div class="modal" id="sendPromoModal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('sendPromoModal')">&times;</span>
+                    <h3>Send Promo Code</h3>
+                    <form id="sendPromoForm">
+                        <div class="form-group">
+                            <label for="selectPromoCode">Select Promo Code:</label>
+                            <select id="selectPromoCode" required>
+                                <option value="">Choose a promo code...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="recipientType">Send To:</label>
+                            <select id="recipientType" onchange="toggleRecipientOptions()">
+                                <option value="all">All Customers</option>
+                                <option value="multiple">Select Multiple Customers</option>
+                                <option value="single">Single Customer</option>
+                            </select>
+                        </div>
+                        
+                        <div id="customerMultiSelect" class="form-group" style="display: none;">
+                            <label>Select Customers:</label>
+                            <div id="customerCheckboxes" class="checkbox-list">
+                                <!-- Customer checkboxes will be populated here -->
+                            </div>
+                        </div>
+                        
+                        <div id="customerSingleSelect" class="form-group" style="display: none;">
+                            <label for="singleCustomer">Select Customer:</label>
+                            <select id="singleCustomer">
+                                <option value="">Choose a customer...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="promoMessage">Custom Message (Optional):</label>
+                            <textarea id="promoMessage" placeholder="Add a personal message with the promo code..." rows="3"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Send Promo Code</button>
                     </form>
                 </div>
             </div>
@@ -169,58 +629,6 @@
                 <h3><i class="fas fa-video"></i> Video Gallery</h3>
                 <div class="gallery-grid" id="videoGallery">
                     <!-- Videos will be loaded here -->
-                </div>
-            </div>
-        </div>
-                        <p>Customer Testimonials</p>
-                    </div>
-                    <div class="video-placeholder">
-                        <i class="fas fa-play-circle"></i>
-                        <p>Studio Vibes</p>
-                    </div>
-                    <div class="video-placeholder">
-                        <i class="fas fa-play-circle"></i>
-                        <p>Behind the Scenes</p>
-                    </div>
-                    <div class="video-placeholder">
-                        <i class="fas fa-play-circle"></i>
-                        <p>Music & Nails Session</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Communications Tab -->
-        <div class="tab-content" id="communications">
-            <div class="section-header">
-                <h2><i class="fas fa-comments"></i> Customer Communications</h2>
-                <button class="btn btn-primary" onclick="showSendMessage()">
-                    <i class="fas fa-paper-plane"></i> Send Message
-                </button>
-            </div>
-            
-            <div class="communications-list" id="communicationsList">
-                <!-- Communications will be loaded here -->
-            </div>
-
-            <!-- Send Message Modal -->
-            <div class="modal" id="messageModal">
-                <div class="modal-content">
-                    <span class="close" onclick="closeModal('messageModal')">&times;</span>
-                    <h3>Send Message</h3>
-                    <form id="messageForm">
-                        <select id="messageType" required>
-                            <option value="">Message Type</option>
-                            <option value="reminder">Appointment Reminder</option>
-                            <option value="promo">Promotional Offer</option>
-                            <option value="follow-up">Follow Up</option>
-                            <option value="custom">Custom Message</option>
-                        </select>
-                        <input type="email" id="recipientEmail" placeholder="Recipient Email" required>
-                        <input type="text" id="messageSubject" placeholder="Subject" required>
-                        <textarea id="messageBody" placeholder="Message" rows="5" required></textarea>
-                        <button type="submit" class="btn btn-primary">Send Message</button>
-                    </form>
                 </div>
             </div>
 

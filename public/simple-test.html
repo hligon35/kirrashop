@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Customer Login Test</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        .test-box { background: #f0f0f0; padding: 20px; margin: 10px 0; border-radius: 8px; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Customer Login Test</h1>
+    
+    <div class="test-box">
+        <h3>Test 1: Direct API Call (Raw Numbers)</h3>
+        <button onclick="testCredentials('5555551234', 'Test123!')">Test: 5555551234</button>
+        <button onclick="testCredentials('1234567890', 'Test123!')">Test: 1234567890</button>
+        <div id="result1"></div>
+    </div>
+    
+    <div class="test-box">
+        <h3>Test 2: Server Status Check</h3>
+        <button onclick="checkStatus()">Check Server Status</button>
+        <div id="result2"></div>
+    </div>
+    
+    <div class="test-box">
+        <h3>Test 3: Manual Input</h3>
+        <input type="text" id="manualPhone" placeholder="Phone number" value="5555551234">
+        <input type="text" id="manualPassword" placeholder="Password" value="Test123!">
+        <button onclick="testManual()">Test Manual Input</button>
+        <div id="result3"></div>
+    </div>
+
+    <script>
+        async function testCredentials(phone, password) {
+            console.log('Testing:', { phone, password });
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, password })
+                });
+                
+                const data = await response.json();
+                const resultDiv = document.getElementById('result1');
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="success">✅ SUCCESS: ${data.message}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ FAILED: ${data.message}</div>`;
+                }
+                
+                console.log('Result:', { status: response.status, data });
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result1').innerHTML = `<div class="error">❌ NETWORK ERROR: ${error.message}</div>`;
+            }
+        }
+        
+        async function checkStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                document.getElementById('result2').innerHTML = `
+                    <div class="success">
+                        <strong>Server Status:</strong> ${data.status}<br>
+                        <strong>Users:</strong><br>
+                        ${data.users.map(u => `• ${u.role}: ${u.phone}`).join('<br>')}
+                    </div>
+                `;
+                
+            } catch (error) {
+                document.getElementById('result2').innerHTML = `<div class="error">❌ Server not responding</div>`;
+            }
+        }
+        
+        async function testManual() {
+            const phone = document.getElementById('manualPhone').value;
+            const password = document.getElementById('manualPassword').value;
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, password })
+                });
+                
+                const data = await response.json();
+                const resultDiv = document.getElementById('result3');
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="success">✅ MANUAL TEST SUCCESS: ${data.message}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ MANUAL TEST FAILED: ${data.message}</div>`;
+                }
+                
+            } catch (error) {
+                document.getElementById('result3').innerHTML = `<div class="error">❌ NETWORK ERROR: ${error.message}</div>`;
+            }
+        }
+        
+        // Auto-check server status on load
+        window.onload = checkStatus;
+    </script>
+</body>
+</html>

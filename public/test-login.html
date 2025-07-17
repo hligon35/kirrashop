@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Login Test</title>
+</head>
+<body>
+    <h1>Customer Login Credential Test</h1>
+    <div id="result"></div>
+    
+    <script>
+        async function testLogin() {
+            const phone = '5555551234';
+            const password = 'Test123!';
+            
+            console.log('Testing credentials:', { phone, password });
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ phone, password })
+                });
+                
+                const data = await response.json();
+                
+                document.getElementById('result').innerHTML = `
+                    <h2>Test Result:</h2>
+                    <p>Status: ${response.status}</p>
+                    <p>Response: ${JSON.stringify(data, null, 2)}</p>
+                `;
+                
+                console.log('Test result:', { status: response.status, data });
+                
+            } catch (error) {
+                console.error('Test error:', error);
+                document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Run test when page loads
+        window.onload = testLogin;
+    </script>
+</body>
+</html>

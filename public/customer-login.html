@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kirra's Nail Studio - Login</title>
+    <title>Kirra's Nail Studio - Customer Login</title>
     <link rel="stylesheet" href="login-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -12,19 +12,20 @@
         <div class="login-form">
             <div class="logo-section">
                 <h1><i class="fas fa-paint-brush"></i> Kirra's Nail Studio</h1>
-                <p>Admin Login</p>
+                <p>Customer Login</p>
+                <small class="customer-note">Access your appointments and booking history</small>
             </div>
 
-            <!-- Initial Login Form -->
-            <form id="loginForm" class="auth-form">
+            <!-- Customer Login Form -->
+            <form id="customerLoginForm" class="auth-form">
                 <div class="form-group">
-                    <label for="phoneNumber">
+                    <label for="customerPhoneNumber">
                         <i class="fas fa-phone"></i> Phone Number
                     </label>
                     <div class="input-container phone-input">
                         <span class="phone-prefix">+1</span>
-                        <input type="tel" id="phoneNumber" placeholder="(555) 123-4567" required>
-                        <button type="button" class="clear-btn" id="clearPhone" onclick="clearPhoneNumber()">
+                        <input type="tel" id="customerPhoneNumber" placeholder="(555) 123-4567" required>
+                        <button type="button" class="clear-btn" id="clearCustomerPhone" onclick="clearCustomerPhoneNumber()">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -32,68 +33,85 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="password">
+                    <label for="customerPassword">
                         <i class="fas fa-lock"></i> Password
                     </label>
-                    <input type="password" id="password" placeholder="Enter your password" required>
+                    <input type="password" id="customerPassword" placeholder="Enter your password" required>
                     <small class="input-hint">Password must be at least 8 characters with 1 uppercase letter and 1 special character</small>
                 </div>
                 
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-sign-in-alt"></i> Login
                 </button>
+                
+                <div class="test-credentials">
+                    <h4><i class="fas fa-info-circle"></i> Test Customer Account</h4>
+                    <div class="credential-item">
+                        <strong>Phone:</strong> 5555551234 <em>(or format as (555) 555-1234)</em>
+                    </div>
+                    <div class="credential-item">
+                        <strong>Password:</strong> Test123!
+                    </div>
+                    <small class="test-note">Use these credentials to test the customer login system</small>
+                    <button type="button" class="btn btn-small test-login-btn" onclick="testDirectLogin()">
+                        <i class="fas fa-vial"></i> Test Login (Debug)
+                    </button>
+                    <button type="button" class="btn btn-small test-login-btn" onclick="checkServerStatus()" style="margin-left: 10px;">
+                        <i class="fas fa-server"></i> Check Server
+                    </button>
+                </div>
             </form>
 
             <!-- 2FA Verification Form (hidden initially) -->
-            <form id="verificationForm" class="auth-form" style="display: none;">
+            <form id="customerVerificationForm" class="auth-form" style="display: none;">
                 <div class="verification-header">
                     <i class="fas fa-shield-alt"></i>
                     <h3>Two-Factor Authentication</h3>
-                    <p>We've sent a verification code to <span id="maskedPhone"></span></p>
+                    <p>We've sent a verification code to <span id="customerMaskedPhone"></span></p>
                 </div>
                 
                 <div class="form-group">
-                    <label for="verificationCode">
+                    <label for="customerVerificationCode">
                         <i class="fas fa-key"></i> Verification Code
                     </label>
-                    <input type="text" id="verificationCode" placeholder="Enter 6-digit code" maxlength="6" required>
+                    <input type="text" id="customerVerificationCode" placeholder="Enter 6-digit code" maxlength="6" required>
                 </div>
                 
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-check"></i> Verify
                 </button>
                 
-                <button type="button" class="btn btn-secondary" onclick="resendCode()">
+                <button type="button" class="btn btn-secondary" onclick="resendCustomerCode()">
                     <i class="fas fa-redo"></i> Resend Code
                 </button>
                 
-                <button type="button" class="btn btn-link" onclick="goBack()">
+                <button type="button" class="btn btn-link" onclick="goBackToCustomerLogin()">
                     <i class="fas fa-arrow-left"></i> Back to Login
                 </button>
             </form>
 
             <!-- Loading Spinner -->
-            <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+            <div id="customerLoadingSpinner" class="loading-spinner" style="display: none;">
                 <i class="fas fa-spinner fa-spin"></i>
                 <p>Authenticating...</p>
             </div>
 
             <!-- Error Message -->
-            <div id="errorMessage" class="error-message" style="display: none;">
+            <div id="customerErrorMessage" class="error-message" style="display: none;">
                 <i class="fas fa-exclamation-triangle"></i>
-                <span id="errorText"></span>
+                <span id="customerErrorText"></span>
             </div>
 
             <!-- Success Message -->
-            <div id="successMessage" class="success-message" style="display: none;">
+            <div id="customerSuccessMessage" class="success-message" style="display: none;">
                 <i class="fas fa-check-circle"></i>
-                <span id="successText"></span>
+                <span id="customerSuccessText"></span>
             </div>
 
             <!-- Navigation Links -->
             <div class="navigation-links">
-                <a href="customer-login.html" class="nav-link">
-                    <i class="fas fa-user"></i> Customer Login
+                <a href="login.html" class="nav-link">
+                    <i class="fas fa-user-shield"></i> Admin Login
                 </a>
                 <a href="/" class="nav-link">
                     <i class="fas fa-home"></i> Back to Main
@@ -102,6 +120,6 @@
         </div>
     </div>
 
-    <script src="login-script.js"></script>
+    <script src="customer-login-script.js"></script>
 </body>
 </html>

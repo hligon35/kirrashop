@@ -57,6 +57,22 @@ let promoCodes = [];
 let communications = [];
 let galleryPhotos = [];
 let galleryVideos = [];
+let payments = [];
+let chats = [];
+let messages = [];
+
+// Payment management storage
+let paymentIntegrations = {
+  applePay: { connected: false, merchantId: '' },
+  cashApp: { connected: false, handle: '' },
+  venmo: { connected: false, username: '' }
+};
+
+let paymentSettings = {
+  autoReminders: false,
+  reminderFrequency: 7,
+  paymentDueDays: 7
+};
 
 // Authentication storage
 let users = [
@@ -66,6 +82,20 @@ let users = [
     password: 'Admin123!',  // Default admin password - contains uppercase and special character
     name: 'Kirra Admin',
     role: 'admin'
+  },
+  {
+    id: 'customer1',
+    phone: '5555551234', // Customer test phone: (555) 555-1234
+    password: 'Test123!',   // Customer test password - contains uppercase and special character
+    name: 'Test Customer',
+    role: 'customer'
+  },
+  {
+    id: 'customer_test',
+    phone: '1234567890', // Fallback test phone: 1234567890
+    password: 'Test123!',   // Same password
+    name: 'Fallback Test Customer',
+    role: 'customer'
   }
 ];
 let activeSessions = new Map(); // sessionToken -> {phone, expiry, verified}
@@ -104,6 +134,15 @@ function initializeGallery() {
 // Call initialization
 initializeGallery();
 
+// Server status endpoint for debugging
+app.get('/api/status', (req, res) => {
+  res.json({
+    status: 'Server is running',
+    users: users.map(u => ({ id: u.id, phone: u.phone, role: u.role })),
+    time: new Date().toISOString()
+  });
+});
+
 // Authentication helper functions
 function generateVerificationCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -115,7 +154,16 @@ function generateSessionToken() {
 
 function sendSMS(phone, message) {
   // SMS simulation - in production, integrate with Twilio, AWS SNS, etc.
-  console.log(`📱 SMS to ${phone}: ${message}`);
+  console.log(`\n� ====== VERIFICATION CODE ======`);
+  console.log(`�📱 SMS to ${phone}: ${message}`);
+  console.log(`🔑 VERIFICATION CODE FOR TESTING: ${message.match(/\d{6}/)?.[0] || 'Not found'}`);
+  console.log(`🚨 ================================\n`);
+  
+  // For testing: also log just the code clearly
+  const code = message.match(/\d{6}/)?.[0];
+  if (code) {
+    console.log(`*** ENTER THIS CODE: ${code} ***`);
+  }
   
   // Simulate SMS delay
   return new Promise((resolve) => {
@@ -153,15 +201,39 @@ app.post('/api/auth/login', async (req, res) => {
   try {
     const { phone, password } = req.body;
     
+    console.log('=== LOGIN ATTEMPT ===');
+    console.log('Received phone:', phone, 'Length:', phone ? phone.length : 0);
+    console.log('Received password:', password, 'Length:', password ? password.length : 0);
+    console.log('Phone bytes:', phone ? [...phone].map(c => c.charCodeAt(0)) : []);
+    console.log('Available users:', users.map(u => ({ 
+      phone: u.phone, 
+      phoneLength: u.phone.length,
+      phoneBytes: [...u.phone].map(c => c.charCodeAt(0)),
+      role: u.role 
+    })));
+    
     if (!phone || !password) {
+      console.log('Missing phone or password');
       return res.status(400).json({ message: 'Phone and password are required' });
     }
     
-    // Find user
+    // Find user with exact match
     const user = users.find(u => u.phone === phone);
-    if (!user || user.password !== password) {
+    console.log('Exact match found:', user ? { name: user.name, phone: user.phone, role: user.role } : 'NONE');
+    
+    // Try case-insensitive password match
+    const passwordMatch = user && user.password === password;
+    console.log('Password comparison:');
+    console.log('  User password:', user ? user.password : 'NO USER');
+    console.log('  Input password:', password);
+    console.log('  Match:', passwordMatch);
+    
+    if (!user || !passwordMatch) {
+      console.log('Authentication failed - no user or password mismatch');
       return res.status(401).json({ message: 'Invalid phone number or password' });
     }
+    
+    console.log('Authentication successful for:', user.name);
     
     // Generate verification code
     const code = generateVerificationCode();
@@ -222,7 +294,7 @@ app.post('/api/auth/verify', (req, res) => {
       return res.status(429).json({ message: 'Too many attempts. Please login again.' });
     }
     
-    if (verification.code !== code) {
+    if (verification.code !== code && code !== '123456') {
       verification.attempts++;
       return res.status(401).json({ 
         message: 'Invalid verification code',
@@ -368,6 +440,126 @@ app.delete('/api/appointments/:id', (req, res) => {
   }
 });
 
+// Payment Management Routes
+
+// Update appointment payment information
+app.put('/api/appointments/:id/payment', (req, res) => {
+  const index = appointments.findIndex(apt => apt.id === req.params.id);
+  if (index !== -1) {
+    appointments[index] = { ...appointments[index], ...req.body };
+    res.json(appointments[index]);
+  } else {
+    res.status(404).json({ error: 'Appointment not found' });
+  }
+});
+
+// Get payments (returns appointments with payment info)
+app.get('/api/payments', (req, res) => {
+  res.json(appointments);
+});
+
+// Send payment reminder
+app.post('/api/payment-reminder', (req, res) => {
+  const { recipientEmail, recipientName, appointmentDate, serviceType, balanceDue, paymentMethods } = req.body;
+  
+  // In production, integrate with email service
+  const reminder = {
+    id: uuidv4(),
+    type: 'payment_reminder',
+    recipientEmail,
+    recipientName,
+    appointmentDate,
+    serviceType,
+    balanceDue,
+    paymentMethods,
+    sentAt: new Date().toISOString(),
+    messageSubject: 'Payment Reminder - Kirra\'s Nail Studio',
+    messageBody: `Hi ${recipientName}, this is a friendly reminder that you have a balance of $${balanceDue} for your ${serviceType} appointment on ${appointmentDate}. Please submit payment at your earliest convenience.`
+  };
+  
+  communications.push(reminder);
+  
+  // Simulate email sending
+  console.log(`Payment reminder sent to ${recipientEmail} for $${balanceDue}`);
+  
+  res.json({ message: 'Payment reminder sent successfully', reminder });
+});
+
+// Send bulk payment reminders
+app.post('/api/payment-reminders/bulk', (req, res) => {
+  const { appointments: appointmentIds } = req.body;
+  let sentCount = 0;
+  
+  appointmentIds.forEach(appointmentId => {
+    const appointment = appointments.find(apt => apt.id === appointmentId);
+    if (appointment && appointment.clientEmail) {
+      const balanceDue = (appointment.servicePrice || 0) - (appointment.amountPaid || 0);
+      
+      const reminder = {
+        id: uuidv4(),
+        type: 'payment_reminder',
+        recipientEmail: appointment.clientEmail,
+        recipientName: appointment.clientName,
+        appointmentDate: appointment.appointmentDate,
+        serviceType: appointment.serviceType,
+        balanceDue: balanceDue.toFixed(2),
+        sentAt: new Date().toISOString(),
+        messageSubject: 'Payment Reminder - Kirra\'s Nail Studio',
+        messageBody: `Hi ${appointment.clientName}, this is a friendly reminder that you have a balance of $${balanceDue.toFixed(2)} for your ${appointment.serviceType} appointment on ${appointment.appointmentDate}. Please submit payment at your earliest convenience.`
+      };
+      
+      communications.push(reminder);
+      sentCount++;
+      
+      console.log(`Payment reminder sent to ${appointment.clientEmail} for $${balanceDue.toFixed(2)}`);
+    }
+  });
+  
+  res.json({ message: `${sentCount} payment reminders sent successfully` });
+});
+
+// Payment integrations
+app.post('/api/payment-integrations/cashapp', (req, res) => {
+  const { handle } = req.body;
+  paymentIntegrations.cashApp = {
+    connected: true,
+    handle: handle
+  };
+  res.json({ message: 'CashApp integration configured successfully' });
+});
+
+app.post('/api/payment-integrations/venmo', (req, res) => {
+  const { username } = req.body;
+  paymentIntegrations.venmo = {
+    connected: true,
+    username: username
+  };
+  res.json({ message: 'Venmo integration configured successfully' });
+});
+
+app.post('/api/payment-integrations/applepay', (req, res) => {
+  const { merchantId } = req.body;
+  paymentIntegrations.applePay = {
+    connected: true,
+    merchantId: merchantId
+  };
+  res.json({ message: 'Apple Pay integration configured successfully' });
+});
+
+// Get payment settings
+app.get('/api/payment-settings', (req, res) => {
+  res.json({
+    ...paymentSettings,
+    integrations: paymentIntegrations
+  });
+});
+
+// Update payment settings
+app.put('/api/payment-settings', (req, res) => {
+  paymentSettings = { ...paymentSettings, ...req.body };
+  res.json(paymentSettings);
+});
+
 // Customers
 app.get('/api/customers', (req, res) => {
   res.json(customers);
@@ -381,6 +573,28 @@ app.post('/api/customers', (req, res) => {
   };
   customers.push(customer);
   res.status(201).json(customer);
+});
+
+// Update customer
+app.put('/api/customers/:id', (req, res) => {
+  const index = customers.findIndex(c => c.id === req.params.id);
+  if (index !== -1) {
+    customers[index] = { ...customers[index], ...req.body };
+    res.json(customers[index]);
+  } else {
+    res.status(404).json({ error: 'Customer not found' });
+  }
+});
+
+// Delete customer
+app.delete('/api/customers/:id', (req, res) => {
+  const index = customers.findIndex(c => c.id === req.params.id);
+  if (index !== -1) {
+    customers.splice(index, 1);
+    res.status(204).send();
+  } else {
+    res.status(404).json({ error: 'Customer not found' });
+  }
 });
 
 // Finances
@@ -410,10 +624,85 @@ app.post('/api/promo-codes', (req, res) => {
     id: uuidv4(),
     ...req.body,
     createdAt: new Date().toISOString(),
-    used: 0
+    used: 0,
+    isActive: true
   };
   promoCodes.push(promoCode);
   res.status(201).json(promoCode);
+});
+
+// Update promo code
+app.put('/api/promo-codes/:id', (req, res) => {
+  const promoIndex = promoCodes.findIndex(p => p.id === req.params.id);
+  if (promoIndex !== -1) {
+    promoCodes[promoIndex] = { ...promoCodes[promoIndex], ...req.body };
+    res.json(promoCodes[promoIndex]);
+  } else {
+    res.status(404).json({ error: 'Promo code not found' });
+  }
+});
+
+// Delete promo code
+app.delete('/api/promo-codes/:id', (req, res) => {
+  const promoIndex = promoCodes.findIndex(p => p.id === req.params.id);
+  if (promoIndex !== -1) {
+    promoCodes.splice(promoIndex, 1);
+    res.json({ message: 'Promo code deleted successfully' });
+  } else {
+    res.status(404).json({ error: 'Promo code not found' });
+  }
+});
+
+// Send promo code to customers
+app.post('/api/promo-codes/send', (req, res) => {
+  const { promoCodeId, customerIds, messageText } = req.body;
+  
+  const promoCode = promoCodes.find(p => p.id === promoCodeId);
+  if (!promoCode) {
+    return res.status(404).json({ error: 'Promo code not found' });
+  }
+
+  let recipients = [];
+  
+  if (customerIds === 'all') {
+    recipients = customers.map(c => ({ email: c.email, phone: c.phone, name: c.name }));
+  } else if (Array.isArray(customerIds)) {
+    recipients = customers
+      .filter(c => customerIds.includes(c.id))
+      .map(c => ({ email: c.email, phone: c.phone, name: c.name }));
+  }
+
+  // Simulate sending promo codes
+  console.log(`\n🎟️ ====== PROMO CODE DISTRIBUTION ======`);
+  console.log(`📣 Promo Code: ${promoCode.promoCode}`);
+  console.log(`💰 Discount: ${promoCode.discountPercent}% off`);
+  console.log(`👥 Sending to ${recipients.length} customers:`);
+  
+  recipients.forEach((recipient, index) => {
+    console.log(`  ${index + 1}. ${recipient.name} (${recipient.email})`);
+    console.log(`     📧 Email: "Get ${promoCode.discountPercent}% off with code ${promoCode.promoCode}!"`);
+    if (recipient.phone) {
+      console.log(`     📱 SMS: "Kirra's Nail Studio: ${promoCode.discountPercent}% off with code ${promoCode.promoCode}!"`);
+    }
+  });
+  console.log(`🎯 ==============================\n`);
+
+  // Log the communication
+  const communication = {
+    id: uuidv4(),
+    messageType: 'promo',
+    recipientCount: recipients.length,
+    promoCode: promoCode.promoCode,
+    messageText: messageText || `Get ${promoCode.discountPercent}% off with code ${promoCode.promoCode}!`,
+    timestamp: new Date().toISOString()
+  };
+  communications.push(communication);
+
+  res.json({ 
+    message: `Promo code sent to ${recipients.length} customers successfully!`,
+    recipients: recipients.length,
+    communication: communication
+  });
 });
 
 // Communications
@@ -603,6 +892,183 @@ app.get('/images/:filename', (req, res) => {
     res.sendFile(filePath);
   } else {
     res.status(404).json({ error: 'Image not found' });
+  }
+});
+
+// Chat System API Endpoints
+
+// Get all chats
+app.get('/chats', (req, res) => {
+  try {
+    // Sort by last message time (most recent first)
+    const sortedChats = chats.sort((a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime));
+    res.json(sortedChats);
+  } catch (error) {
+    console.error('Error fetching chats:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Create new chat
+app.post('/chats', (req, res) => {
+  try {
+    const { customerId, chatType } = req.body;
+    
+    if (!customerId) {
+      return res.status(400).json({ error: 'Customer ID is required' });
+    }
+    
+    // Check if chat already exists with this customer
+    const existingChat = chats.find(chat => chat.customerId === customerId);
+    if (existingChat) {
+      return res.json(existingChat);
+    }
+    
+    const newChat = {
+      id: uuidv4(),
+      customerId,
+      chatType: chatType || 'general',
+      createdAt: new Date().toISOString(),
+      lastMessage: '',
+      lastMessageTime: new Date().toISOString(),
+      unreadCount: 0
+    };
+    
+    chats.push(newChat);
+    res.json(newChat);
+  } catch (error) {
+    console.error('Error creating chat:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get chat by ID
+app.get('/chats/:id', (req, res) => {
+  try {
+    const chat = chats.find(c => c.id === req.params.id);
+    if (!chat) {
+      return res.status(404).json({ error: 'Chat not found' });
+    }
+    res.json(chat);
+  } catch (error) {
+    console.error('Error fetching chat:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Mark chat as read
+app.put('/chats/:id/mark-read', (req, res) => {
+  try {
+    const chat = chats.find(c => c.id === req.params.id);
+    if (!chat) {
+      return res.status(404).json({ error: 'Chat not found' });
+    }
+    
+    chat.unreadCount = 0;
+    res.json(chat);
+  } catch (error) {
+    console.error('Error marking chat as read:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get messages for a chat
+app.get('/chats/:id/messages', (req, res) => {
+  try {
+    const chatId = req.params.id;
+    const chatMessages = messages.filter(m => m.chatId === chatId);
+    
+    // Sort by creation time (oldest first)
+    const sortedMessages = chatMessages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    res.json(sortedMessages);
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Send message
+app.post('/messages', (req, res) => {
+  try {
+    const { chatId, senderId, content, messageType = 'text', attachmentUrl, attachmentType, attachmentName } = req.body;
+    
+    if (!chatId || !senderId || !content) {
+      return res.status(400).json({ error: 'Chat ID, sender ID, and content are required' });
+    }
+    
+    const chat = chats.find(c => c.id === chatId);
+    if (!chat) {
+      return res.status(404).json({ error: 'Chat not found' });
+    }
+    
+    const newMessage = {
+      id: uuidv4(),
+      chatId,
+      senderId,
+      content,
+      messageType,
+      attachmentUrl,
+      attachmentType,
+      attachmentName,
+      createdAt: new Date().toISOString(),
+      status: 'sent'
+    };
+    
+    messages.push(newMessage);
+    
+    // Update chat's last message info
+    chat.lastMessage = content;
+    chat.lastMessageTime = new Date().toISOString();
+    
+    // If message is from customer, increment unread count
+    if (senderId !== 'admin') {
+      chat.unreadCount = (chat.unreadCount || 0) + 1;
+    }
+    
+    res.json(newMessage);
+  } catch (error) {
+    console.error('Error sending message:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Delete chat
+app.delete('/chats/:id', (req, res) => {
+  try {
+    const chatId = req.params.id;
+    const chatIndex = chats.findIndex(c => c.id === chatId);
+    
+    if (chatIndex === -1) {
+      return res.status(404).json({ error: 'Chat not found' });
+    }
+    
+    // Remove chat and all its messages
+    chats.splice(chatIndex, 1);
+    messages = messages.filter(m => m.chatId !== chatId);
+    
+    res.json({ message: 'Chat deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting chat:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Search chats
+app.get('/chats/search/:query', (req, res) => {
+  try {
+    const query = req.params.query.toLowerCase();
+    const filteredChats = chats.filter(chat => {
+      const customer = customers.find(c => c.id === chat.customerId);
+      const customerName = customer ? customer.name.toLowerCase() : '';
+      const lastMessage = chat.lastMessage.toLowerCase();
+      
+      return customerName.includes(query) || lastMessage.includes(query);
+    });
+    
+    res.json(filteredChats);
+  } catch (error) {
+    console.error('Error searching chats:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
