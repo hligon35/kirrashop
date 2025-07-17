@@ -62,7 +62,7 @@ let galleryVideos = [];
 let users = [
   {
     id: 'admin',
-    phone: '5551234567', // Default admin phone: (555) 123-4567
+    phone: '3174323276', // Admin test phone: (317) 432-3276
     password: 'Admin123!',  // Default admin password - contains uppercase and special character
     name: 'Kirra Admin',
     role: 'admin'
@@ -604,6 +604,15 @@ app.get('/images/:filename', (req, res) => {
   } else {
     res.status(404).json({ error: 'Image not found' });
   }
+});
+
+// Serve login page
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+app.get('/login.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
 // Serve main application
