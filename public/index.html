@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kirra's Nail Studio - Business Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="appointment-request-styles.css">
+    <link rel="stylesheet" href="time-slots-styles.css">
+    <link rel="stylesheet" href="custom-layout.css">
+    <link rel="stylesheet" href="no-header-styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Grunge+Display:wght@400;700&family=Rock+Salt&family=Fredoka+One&display=swap" rel="stylesheet">
 </head>
@@ -15,16 +19,13 @@
     </button>
     
     <div class="container">
-        <!-- Header -->
-        <header class="header">
+        <!-- Welcome Section -->
+        <section class="welcome-section-dashboard">
             <div class="logo-section">
                 <h1>Kirra's Nail Studio</h1>
                 <p class="tagline">Where Nails Meet Art & Music</p>
             </div>
-        </header>
-
-        <!-- Login Access Section -->
-        <div class="login-access-section">
+                
             <div class="login-buttons">
                 <a href="customer-login.html" class="btn btn-purple login-access-btn">
                     <i class="fas fa-user"></i> Customer Portal
@@ -33,8 +34,7 @@
                     <i class="fas fa-user-shield"></i> Admin Portal
                 </a>
             </div>
-            <p class="login-subtitle">Access your account or manage the studio</p>
-        </div>
+        </section>
 
         <!-- Navigation -->
         <nav class="nav-tabs">
@@ -45,14 +45,22 @@
             <button class="tab-btn" data-tab="chat">Chat</button>
             <button class="tab-btn" data-tab="promos">Promos</button>
             <button class="tab-btn" data-tab="gallery">Gallery</button>
+            <button class="tab-btn admin-only" data-tab="settings">Settings</button>
         </nav>
 
         <!-- Appointments Tab -->
         <div class="tab-content active" id="appointments">
             <div class="section-header">
                 <h2><i class="fas fa-calendar-alt"></i> Appointment Management</h2>
-                <button class="btn btn-primary" onclick="showAddAppointment()">
+                
+                <!-- Admin-only button -->
+                <button class="btn btn-primary admin-only" onclick="showAddAppointment()">
                     <i class="fas fa-plus"></i> New Appointment
+                </button>
+                
+                <!-- Customer-only button -->
+                <button class="btn btn-primary customer-only" onclick="showRequestAppointment()">
+                    <i class="fas fa-calendar-plus"></i> Request Appointment
                 </button>
             </div>
             
@@ -108,6 +116,38 @@
                         
                         <textarea id="notes" placeholder="Special requests or notes"></textarea>
                         <button type="submit" class="btn btn-primary">Book Appointment</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Customer Request Appointment Modal -->
+            <div class="modal" id="requestAppointmentModal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('requestAppointmentModal')">&times;</span>
+                    <h3>Request an Appointment</h3>
+                    <form id="requestAppointmentForm">
+                        <div class="form-notice">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Your request will be sent to the salon for approval. You'll be notified once it's confirmed.</p>
+                        </div>
+                        
+                        <input type="date" id="requestDate" required>
+                        <input type="time" id="requestTime" required>
+                        <select id="requestServiceType" required onchange="updateRequestServicePrice()">
+                            <option value="">Select Service</option>
+                            <option value="manicure">Classic Manicure - $25</option>
+                            <option value="pedicure">Pedicure - $35</option>
+                            <option value="gel">Gel Nails - $45</option>
+                            <option value="acrylic">Acrylic Set - $55</option>
+                            <option value="nail-art">Custom Nail Art - $65</option>
+                            <option value="mushroom-design">Mushroom Special - $70</option>
+                        </select>
+                        
+                        <textarea id="requestNotes" placeholder="Special requests or notes (optional)"></textarea>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Send Request
+                        </button>
                     </form>
                 </div>
             </div>
@@ -710,8 +750,24 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Settings Tab (Admin Only) -->
+        <div class="tab-content" id="settings">
+            <div class="section-header">
+                <h2><i class="fas fa-cog"></i> Salon Settings</h2>
+            </div>
+            
+            <div class="settings-section">
+                <p class="settings-intro">Configure salon hours, services, and other settings.</p>
+                
+                <!-- Working hours will be loaded here by time-slots.js -->
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
+    <script src="auth-check.js"></script>
+    <script src="time-slots.js"></script>
+    <script src="appointment-requests.js"></script>
 </body>
 </html>

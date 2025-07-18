@@ -1,0 +1,128 @@
+/* Appointment Request Styles */
+
+/* Request Form Notice */
+.form-notice {
+    background-color: #f8f4ff;
+    border-left: 4px solid #9c27b0;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.form-notice i {
+    color: #9c27b0;
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.form-notice p {
+    margin: 0;
+    color: #333;
+    font-size: 14px;
+}
+
+/* Appointment Request Card */
+.appointment-request {
+    border-left: 4px solid #ff9800;
+    position: relative;
+}
+
+.appointment-request::before {
+    content: "REQUEST";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ff9800;
+    color: white;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+/* Request Status */
+.request-status {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin: 10px 0;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.request-status.pending {
+    background-color: #fff3e0;
+    color: #e65100;
+}
+
+.request-status.approved {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.request-status.denied {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.request-status i {
+    margin-right: 6px;
+}
+
+/* Request Admin Controls */
+.request-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    gap: 10px;
+}
+
+.request-controls button {
+    flex: 1;
+    padding: 8px 6px;
+    font-size: 13px;
+}
+
+/* Notification Badge */
+.notification-badge {
+    background-color: #f44336;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Section Header with Notification */
+.section-header {
+    position: relative;
+}
+
+.section-header .notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .request-controls {
+        flex-direction: column;
+    }
+    
+    .request-controls button {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+}

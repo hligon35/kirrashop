@@ -1,0 +1,140 @@
+/* Custom styles for landing page with removed header */
+
+/* Welcome section with logo and title */
+.welcome-section {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding-top: 30px;
+    background: var(--purple-gradient);
+    border-bottom: 3px solid var(--accent-color);
+    box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3);
+    color: white;
+}
+
+.welcome-content h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0;
+    text-align: center;
+}
+
+.welcome-content .tagline {
+    font-size: 1rem;
+    margin-top: 5px;
+    opacity: 0.9;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.welcome-content h2 {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.welcome-login {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    padding: 15px 0;
+    border-top: 1px solid var(--accent-color);
+    border-bottom: 1px solid var(--accent-color);
+    background-color: rgba(248, 240, 255, 0.7);
+}
+
+.login-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 50%;
+    transform: translateX(50%);
+    z-index: 1000;
+    margin-top: 5px;
+}
+
+/* Endless slider styles */
+.slider-container {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    border-radius: 0;
+    border-top: 2px solid var(--accent-color);
+    border-bottom: 2px solid var(--accent-color);
+    padding: 20px 0;
+    overflow: visible; /* Allow content to overflow for true edge-to-edge */
+    position: relative;
+    left: 0;
+}
+
+.gallery-slider-section {
+    overflow: hidden;
+    position: relative;
+    border-radius: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.gallery-slider-section::before {
+    border-radius: 0;
+    background: linear-gradient(to right, 
+        rgba(248,240,255,0.9) 0%, 
+        rgba(248,240,255,0) 5%, 
+        rgba(248,240,255,0) 95%, 
+        rgba(248,240,255,0.9) 100%);
+}
+
+.gallery-slider-section::before {
+    border-radius: 0;
+    background: linear-gradient(to right, 
+        rgba(248,240,255,0.9) 0%, 
+        rgba(248,240,255,0) 5%, 
+        rgba(248,240,255,0) 95%, 
+        rgba(248,240,255,0.9) 100%);
+}
+
+/* Dashboard welcome section */
+.welcome-section-dashboard {
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    text-align: center;
+    color: var(--text-light);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--accent-color);
+}
+
+.welcome-section-dashboard .login-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.welcome-section-dashboard h1 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.welcome-section-dashboard .tagline {
+    color: var(--text-light);
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .header-login {
+        flex-direction: column;
+    }
+    
+    .login-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .slider-container {
+        padding: 15px 0;
+    }
+}

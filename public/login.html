@@ -3,105 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kirra's Nail Studio - Login</title>
+    <title>Kirra's Nail Studio - Welcome</title>
     <link rel="stylesheet" href="login-styles.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="landing-styles.css">
+    <link rel="stylesheet" href="slider-animation.css">
+    <link rel="stylesheet" href="custom-layout.css">
+    <link rel="stylesheet" href="no-header-styles.css">
+    <link rel="stylesheet" href="no-gallery-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-form">
-            <div class="logo-section">
+    <div class="landing-container">
+        <!-- Welcome Section -->
+        <section class="welcome-section">
+            <div class="welcome-content">
                 <h1><i class="fas fa-paint-brush"></i> Kirra's Nail Studio</h1>
-                <p>Admin Login</p>
-            </div>
-
-            <!-- Initial Login Form -->
-            <form id="loginForm" class="auth-form">
-                <div class="form-group">
-                    <label for="phoneNumber">
-                        <i class="fas fa-phone"></i> Phone Number
-                    </label>
-                    <div class="input-container phone-input">
-                        <span class="phone-prefix">+1</span>
-                        <input type="tel" id="phoneNumber" placeholder="(555) 123-4567" required>
-                        <button type="button" class="clear-btn" id="clearPhone" onclick="clearPhoneNumber()">
-                            <i class="fas fa-times"></i>
-                        </button>
+                <p class="tagline">Where Nails Meet Art & Music</p>
+                <h2>Welcome</h2>
+                <p class="welcome-text">
+                    Experience the perfect blend of artistry and relaxation in our boutique nail studio. 
+                    Our skilled technicians transform your nails into wearable art while you enjoy our curated music selection.
+                </p>
+                <div class="welcome-cta">
+                    <a href="#contact" class="btn btn-primary cta-btn">
+                        <i class="fas fa-calendar-alt"></i> Book an Appointment
+                    </a>
+                    <a href="#services" class="btn btn-secondary cta-btn">
+                        <i class="fas fa-list"></i> View Services
+                    </a>
+                    <button id="toggleLoginForm" class="btn btn-secondary cta-btn login-btn">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </div>
+                
+                <!-- Login Dropdown (hidden initially) -->
+                <div class="login-dropdown" id="loginDropdown">
+                    <div class="login-tabs">
+                        <button class="login-tab active" data-target="admin">Admin</button>
+                        <button class="login-tab" data-target="customer">Customer</button>
                     </div>
-                    <small class="input-hint">Enter your 10-digit phone number (without country code)</small>
+                    
+                    <!-- Admin Login Form -->
+                    <form id="loginForm" class="auth-form login-panel active" data-panel="admin">
+                        <div class="form-group compact">
+                            <label for="phoneNumber">
+                                <i class="fas fa-phone"></i> Phone
+                            </label>
+                            <div class="input-container phone-input">
+                                <span class="phone-prefix">+1</span>
+                                <input type="tel" id="phoneNumber" placeholder="(555) 123-4567" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group compact">
+                            <label for="password">
+                                <i class="fas fa-lock"></i> Password
+                            </label>
+                            <input type="password" id="password" placeholder="Enter password" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                    </form>
+                    
+                    <!-- Customer Login Form -->
+                    <form id="customerLoginForm" class="auth-form login-panel" data-panel="customer" style="display: none;">
+                        <div class="form-group compact">
+                            <label for="customerPhoneNumber">
+                                <i class="fas fa-phone"></i> Phone
+                            </label>
+                            <div class="input-container phone-input">
+                                <span class="phone-prefix">+1</span>
+                                <input type="tel" id="customerPhoneNumber" placeholder="(555) 123-4567" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group compact">
+                            <label for="customerPassword">
+                                <i class="fas fa-lock"></i> Password
+                            </label>
+                            <input type="password" id="customerPassword" placeholder="Enter password" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                    </form>
                 </div>
-                
-                <div class="form-group">
-                    <label for="password">
-                        <i class="fas fa-lock"></i> Password
-                    </label>
-                    <input type="password" id="password" placeholder="Enter your password" required>
-                    <small class="input-hint">Password must be at least 8 characters with 1 uppercase letter and 1 special character</small>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="services-section" id="services">
+            <div class="section-header">
+                <h2><i class="fas fa-spa"></i> Our Services</h2>
+                <p>Experience exceptional nail care with our premium services</p>
+            </div>
+            <div class="services-container">
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-walking"></i></div>
+                    <h3>Acrylic Toes</h3>
+                    <p>Beautiful, durable acrylic application for your toes</p>
+                    <div class="price">$25</div>
                 </div>
-                
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </button>
-            </form>
-
-            <!-- 2FA Verification Form (hidden initially) -->
-            <form id="verificationForm" class="auth-form" style="display: none;">
-                <div class="verification-header">
-                    <i class="fas fa-shield-alt"></i>
-                    <h3>Two-Factor Authentication</h3>
-                    <p>We've sent a verification code to <span id="maskedPhone"></span></p>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-shoe-prints"></i></div>
+                    <h3>Gel Toes</h3>
+                    <p>Long-lasting gel polish application for your toes</p>
+                    <div class="price">$15</div>
                 </div>
-                
-                <div class="form-group">
-                    <label for="verificationCode">
-                        <i class="fas fa-key"></i> Verification Code
-                    </label>
-                    <input type="text" id="verificationCode" placeholder="Enter 6-digit code" maxlength="6" required>
+                <div class="service-card acrylic-nails">
+                    <div class="service-icon"><i class="fas fa-hand-sparkles"></i></div>
+                    <h3>Acrylic Nails</h3>
+                    <div class="tiered-pricing">
+                        <div class="tier">
+                            <span class="tier-name">Short</span>
+                            <span class="tier-price">$40</span>
+                        </div>
+                        <div class="tier">
+                            <span class="tier-name">Medium</span>
+                            <span class="tier-price">$45-$50</span>
+                        </div>
+                        <div class="tier">
+                            <span class="tier-name">Long</span>
+                            <span class="tier-price">$50-$60</span>
+                        </div>
+                        <div class="tier">
+                            <span class="tier-name">XL and Any Other Length</span>
+                            <span class="tier-price">$65+</span>
+                        </div>
+                    </div>
                 </div>
-                
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-check"></i> Verify
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-gem"></i></div>
+                    <h3>Gel Nails</h3>
+                    <p>Premium gel nail application with perfect finish</p>
+                    <div class="price">$20</div>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-sync-alt"></i></div>
+                    <h3>Fill-Ins</h3>
+                    <p>Maintain your beautiful nails with professional fill-ins</p>
+                    <div class="price">$25-$45</div>
+                    <p class="price-note">(depending on length)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Appointment Booking Modal (hidden initially) -->
+        <div class="appointment-overlay" id="appointmentOverlay" style="display: none;">
+            <div class="appointment-modal">
+                <button class="close-modal" id="closeAppointmentModal">
+                    <i class="fas fa-times"></i>
                 </button>
-                
-                <button type="button" class="btn btn-secondary" onclick="resendCode()">
-                    <i class="fas fa-redo"></i> Resend Code
-                </button>
-                
-                <button type="button" class="btn btn-link" onclick="goBack()">
-                    <i class="fas fa-arrow-left"></i> Back to Login
-                </button>
-            </form>
-
-            <!-- Loading Spinner -->
-            <div id="loadingSpinner" class="loading-spinner" style="display: none;">
-                <i class="fas fa-spinner fa-spin"></i>
-                <p>Authenticating...</p>
+                <div class="section-header">
+                    <h2><i class="fas fa-calendar-alt"></i> Book an Appointment</h2>
+                    <p>Schedule your visit to Kirra's Nail Studio</p>
+                </div>
+                <div class="appointment-content">
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <h3>Location</h3>
+                                <p>123 Beauty Lane, Suite 456<br>Los Angeles, CA 90210</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone-alt"></i>
+                            <div>
+                                <h3>Phone</h3>
+                                <p>(555) 123-4567</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <h3>Hours</h3>
+                                <p>Mon-Fri: 9am - 7pm<br>Sat: 10am - 6pm<br>Sun: Closed</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contact-form-container">
+                        <form class="contact-form">
+                            <div class="form-group">
+                                <label for="name">Your Name</label>
+                                <input type="text" id="name" placeholder="Enter your name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" placeholder="Enter your email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input type="tel" id="phone" placeholder="Enter your phone number" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="service">Service</label>
+                                <select id="service" required>
+                                    <option value="" disabled selected>Select a service</option>
+                                    <option value="acrylic-toes">Acrylic Toes ($25)</option>
+                                    <option value="gel-toes">Gel Toes ($15)</option>
+                                    <option value="acrylic-short">Acrylic Nails - Short ($40)</option>
+                                    <option value="acrylic-medium">Acrylic Nails - Medium ($45-$50)</option>
+                                    <option value="acrylic-long">Acrylic Nails - Long ($50-$60)</option>
+                                    <option value="acrylic-xl">Acrylic Nails - XL ($65+)</option>
+                                    <option value="gel-nails">Gel Nails ($20)</option>
+                                    <option value="fill-in">Fill-Ins ($25-$45)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="date">Preferred Date</label>
+                                <input type="date" id="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="time">Preferred Time</label>
+                                <select id="time" required>
+                                    <option value="" disabled selected>Select a time</option>
+                                    <option value="morning">Morning (9am - 12pm)</option>
+                                    <option value="afternoon">Afternoon (12pm - 4pm)</option>
+                                    <option value="evening">Evening (4pm - 7pm)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Special Requests</label>
+                                <textarea id="message" rows="3" placeholder="Any special requests or notes"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary book-btn">
+                                <i class="fas fa-calendar-check"></i> Request Appointment
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <!-- Error Message -->
-            <div id="errorMessage" class="error-message" style="display: none;">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span id="errorText"></span>
+        <!-- 2FA Verification Form (hidden initially) -->
+        <div class="auth-overlay" id="authOverlay" style="display: none;">
+            <div class="auth-modal">
+                <form id="verificationForm" class="auth-form">
+                    <div class="verification-header">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Two-Factor Authentication</h3>
+                        <p>We've sent a verification code to <span id="maskedPhone"></span></p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="verificationCode">
+                            <i class="fas fa-key"></i> Verification Code
+                        </label>
+                        <input type="text" id="verificationCode" placeholder="Enter 6-digit code" maxlength="6" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Verify
+                    </button>
+                    
+                    <button type="button" class="btn btn-secondary" onclick="resendCode()">
+                        <i class="fas fa-redo"></i> Resend Code
+                    </button>
+                    
+                    <button type="button" class="btn btn-link" onclick="goBack()">
+                        <i class="fas fa-arrow-left"></i> Back to Login
+                    </button>
+                </form>
             </div>
+        </div>
 
-            <!-- Success Message -->
-            <div id="successMessage" class="success-message" style="display: none;">
-                <i class="fas fa-check-circle"></i>
-                <span id="successText"></span>
-            </div>
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Authenticating...</p>
+        </div>
 
-            <!-- Navigation Links -->
-            <div class="navigation-links">
-                <a href="customer-login.html" class="nav-link">
-                    <i class="fas fa-user"></i> Customer Login
-                </a>
-                <a href="/" class="nav-link">
-                    <i class="fas fa-home"></i> Back to Main
-                </a>
-            </div>
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message message error" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="errorText"></span>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="success-message message success" style="display: none;">
+            <i class="fas fa-check-circle"></i>
+            <span id="successText"></span>
         </div>
     </div>
 
-    <script src="login-script.js"></script>
+    <!-- Scripts -->
+    <script src="login-script-new.js"></script>
+    <script src="landing-script.js"></script>
 </body>
 </html>

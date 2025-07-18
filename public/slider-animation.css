@@ -1,0 +1,25 @@
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-250px * 10)); /* adjust based on item width and count */
+  }
+}
+
+.slider-container {
+  animation: scroll 32s linear infinite; /* 20% faster than 40s */
+  width: calc(250px * 20); /* adjust based on total items */
+}
+
+.top-slider .slider-container {
+  animation: scroll 32s linear infinite; /* 20% faster than 40s */
+}
+
+.bottom-slider .slider-container {
+  animation: scroll 32s linear infinite reverse; /* 20% faster than 40s */
+}
+
+.slider-container:hover {
+  animation-play-state: paused;
+}

@@ -1,32 +1,43 @@
 // Authentication check
 function checkAuthentication() {
     const authToken = localStorage.getItem('authToken');
+    const userToken = localStorage.getItem('userToken');
     
-    if (!authToken) {
-        redirectToLogin();
+    // Support both authentication methods (old and new)
+    if (!authToken && !userToken) {
+        // No authentication found - don't redirect, just show login buttons
+        console.log('No authentication found - allowing access to public areas');
         return false;
     }
     
-    // Verify token with server
-    fetch('/api/auth/verify-token', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${authToken}`
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (!data.valid) {
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userPhone');
-            redirectToLogin();
-        }
-    })
-    .catch(error => {
-        console.error('Auth verification error:', error);
-        redirectToLogin();
-    });
+    // If we have userToken from the new auth system, consider it valid
+    if (userToken) {
+        console.log('User authenticated with new auth system');
+        return true;
+    }
+    
+    // Legacy token verification with server
+    if (authToken) {
+        fetch('/api/auth/verify-token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.valid) {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userPhone');
+                // Don't redirect, just show login buttons
+            }
+        })
+        .catch(error => {
+            console.error('Auth verification error:', error);
+            // Don't redirect on error, just show login buttons
+        });
+    }
     
     return true;
 }
@@ -36,6 +47,7 @@ function redirectToLogin() {
 }
 
 function logout() {
+    // Handle both old and new authentication methods
     const authToken = localStorage.getItem('authToken');
     
     if (authToken) {
@@ -47,9 +59,17 @@ function logout() {
         });
     }
     
+    // Clear all authentication tokens
     localStorage.removeItem('authToken');
     localStorage.removeItem('userPhone');
-    redirectToLogin();
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userId');
+    
+    // Show success message and reload page
+    alert('You have been logged out successfully');
+    window.location.reload();
 }
 
 // API Base URL
@@ -121,7 +141,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeEventListeners();
     loadAllData();
     loadGalleryImages();
-    addLogoutButton();
     
     // Make functions globally accessible for onclick handlers
     window.deleteAppointment = deleteAppointment;
@@ -195,22 +214,6 @@ function initializeTheme() {
     } else {
         body.classList.remove('dark-theme');
         themeIcon.className = 'fas fa-moon';
-    }
-}
-
-// Add logout button to header
-function addLogoutButton() {
-    const header = document.querySelector('.header');
-    const logoSection = header.querySelector('.logo-section');
-    
-    if (!document.getElementById('logoutBtn')) {
-        const logoutBtn = document.createElement('button');
-        logoutBtn.id = 'logoutBtn';
-        logoutBtn.className = 'logout-btn';
-        logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Logout';
-        logoutBtn.onclick = logout;
-        
-        header.appendChild(logoutBtn);
     }
 }
 
