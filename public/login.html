@@ -11,9 +11,24 @@
     <link rel="stylesheet" href="custom-layout.css">
     <link rel="stylesheet" href="no-header-styles.css">
     <link rel="stylesheet" href="no-gallery-styles.css">
+    <link rel="stylesheet" href="vertical-slider.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <!-- Left Vertical Slider -->
+    <div class="vertical-slider left-slider">
+        <div class="vertical-slider-container" id="leftSliderContainer">
+            <!-- Images will be loaded here via JavaScript -->
+        </div>
+    </div>
+    
+    <!-- Right Vertical Slider -->
+    <div class="vertical-slider right-slider">
+        <div class="vertical-slider-container" id="rightSliderContainer">
+            <!-- Images will be loaded here via JavaScript -->
+        </div>
+    </div>
+
     <div class="landing-container">
         <!-- Welcome Section -->
         <section class="welcome-section">
@@ -103,20 +118,18 @@
             </div>
             <div class="services-container">
                 <div class="service-card">
-                    <div class="service-icon"><i class="fas fa-walking"></i></div>
                     <h3>Acrylic Toes</h3>
-                    <p>Beautiful, durable acrylic application for your toes</p>
+                    <p>Beautiful, durable acrylic application for your toes that lasts longer and maintains its pristine appearance.</p>
                     <div class="price">$25</div>
                 </div>
                 <div class="service-card">
-                    <div class="service-icon"><i class="fas fa-shoe-prints"></i></div>
                     <h3>Gel Toes</h3>
-                    <p>Long-lasting gel polish application for your toes</p>
+                    <p>Long-lasting gel polish application for your toes with a mirror-like finish and chip-resistant durability.</p>
                     <div class="price">$15</div>
                 </div>
                 <div class="service-card acrylic-nails">
-                    <div class="service-icon"><i class="fas fa-hand-sparkles"></i></div>
                     <h3>Acrylic Nails</h3>
+                    <p>Custom acrylic nail extensions with your choice of length and design. Durable and versatile for any style.</p>
                     <div class="tiered-pricing">
                         <div class="tier">
                             <span class="tier-name">Short</span>
@@ -137,15 +150,13 @@
                     </div>
                 </div>
                 <div class="service-card">
-                    <div class="service-icon"><i class="fas fa-gem"></i></div>
                     <h3>Gel Nails</h3>
-                    <p>Premium gel nail application with perfect finish</p>
+                    <p>Premium gel nail application with perfect finish that gives you a natural, glossy look that lasts for weeks.</p>
                     <div class="price">$20</div>
                 </div>
                 <div class="service-card">
-                    <div class="service-icon"><i class="fas fa-sync-alt"></i></div>
                     <h3>Fill-Ins</h3>
-                    <p>Maintain your beautiful nails with professional fill-ins</p>
+                    <p>Maintain your beautiful nails with professional fill-ins that restore the look of your nails as they grow.</p>
                     <div class="price">$25-$45</div>
                     <p class="price-note">(depending on length)</p>
                 </div>
@@ -294,5 +305,6 @@
     <!-- Scripts -->
     <script src="login-script-new.js"></script>
     <script src="landing-script.js"></script>
+    <script src="vertical-slider.js"></script>
 </body>
 </html>
