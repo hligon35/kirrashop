@@ -45,24 +45,17 @@
 .vertical-slider-container {
     display: flex;
     flex-direction: column;
-    animation-duration: 51s; /* 60s reduced by 15% = 51s for faster animation */
+    animation-duration: 36.85s; /* 43.35s reduced by 15% = 36.85s for faster animation */
     animation-iteration-count: infinite;
     animation-timing-function: linear;
     animation-delay: 0s; /* Start immediately */
     padding: 8px 0; /* Increased padding */
-    min-height: 150%; /* Reduced height to prevent overlapping */
-    animation-name: scrollDown; /* Default animation */
-    will-change: transform; /* Optimize for animation performance */
+    min-height: 150%; /* Height for continuous scrolling */
     position: relative; /* Establish stacking context */
+    will-change: transform; /* Optimize for animation performance */
 }
 
-.left-slider .vertical-slider-container {
-    animation-name: scrollDown; /* Left slider scrolls down */
-}
-
-.right-slider .vertical-slider-container {
-    animation-name: scrollUp; /* Right slider scrolls up */
-}
+/* Remove explicit animation-name from container to let JavaScript handle it */
 
 .vertical-slider-item {
     width: 100%;
@@ -83,6 +76,10 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: 2px solid rgba(138, 43, 226, 0.2);
     display: block; /* Prevent inline display issues */
+    will-change: transform; /* GPU acceleration hint */
+    backface-visibility: hidden; /* Reduces paints */
+    transform: translateZ(0); /* Force GPU acceleration */
+    contain: paint; /* Improve rendering performance */
 }
 
 .vertical-slider-item img:hover {
@@ -96,19 +93,19 @@
 
 @keyframes scrollDown {
     0% {
-        transform: translateY(0%);
+        transform: translateY(0);
     }
     100% {
-        transform: translateY(-50%); /* Reduced movement to prevent overlapping */
+        transform: translateY(-50%); /* Use 50% for smoother looping */
     }
 }
 
 @keyframes scrollUp {
     0% {
-        transform: translateY(-50%); /* Reduced movement to prevent overlapping */
+        transform: translateY(-50%); /* Start from 50% up */
     }
     100% {
-        transform: translateY(0%);
+        transform: translateY(0);
     }
 }
 

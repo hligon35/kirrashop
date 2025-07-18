@@ -1,5 +1,7 @@
 // Populate vertical sliders with images
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Slider script loaded');
+    
     // Create and show loading spinner
     const createLoadingSpinner = () => {
         const spinner = document.createElement('div');
@@ -17,8 +19,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show loading spinner
     const loadingSpinner = createLoadingSpinner();
     
-    // List of images in the folder
-    const images = [
+    // Hardcoded fallback images
+    const FALLBACK_IMAGES = [
         'IMG_9914.PNG', 'IMG_9915.PNG', 'IMG_9916.PNG', 'IMG_9917.PNG', 'IMG_9918.PNG', 
         'IMG_9919.PNG', 'IMG_9920.PNG', 'IMG_9921.PNG', 'IMG_9922.PNG', 'IMG_9923.PNG', 
         'IMG_9924.PNG', 'IMG_9925.PNG', 'IMG_9926.PNG', 'IMG_9927.PNG', 'IMG_9928.PNG', 
@@ -27,215 +29,143 @@ document.addEventListener('DOMContentLoaded', function() {
         'IMG_9940.PNG', 'IMG_9941.PNG'
     ];
     
-    // Preload all images for faster loading
-    const preloadImages = () => {
-        const preloadPromises = images.map(imgSrc => {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                img.onload = () => resolve(imgSrc);
-                img.onerror = () => reject(imgSrc);
-                img.src = `images/${imgSrc}`;
-            });
-        });
-        
-        return Promise.all(preloadPromises)
-            .then(loadedImages => {
-                console.log('All images preloaded successfully');
-                return loadedImages;
-            })
-            .catch(failedImage => {
-                console.warn(`Failed to preload image: ${failedImage}`);
-                return images; // Return all images anyway to continue
-            });
+    // Fetch images from server
+    const getImages = async () => {
+        try {
+            const response = await fetch('/api/gallery-images');
+            if (!response.ok) throw new Error('Failed to fetch images');
+            const images = await response.json();
+            console.log('Images fetched successfully:', images);
+            return images.length > 0 ? images : FALLBACK_IMAGES;
+        } catch (error) {
+            console.error('Error fetching images:', error);
+            return FALLBACK_IMAGES;
+        }
     };
     
-    // Shuffle images for variety
-    const shuffleArray = arr => {
-        for (let i = arr.length - 1; i > 0; i--) {
+    // Shuffle an array
+    const shuffleArray = (array) => {
+        const newArray = [...array];
+        for (let i = newArray.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [arr[i], arr[j]] = [arr[j], arr[i]];
+            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
         }
-        return arr;
+        return newArray;
     };
     
-    const leftImages = shuffleArray([...images]);
-    const rightImages = shuffleArray([...images]);
-    
-    // Create modal elements
-    const createModal = () => {
-        // Remove existing modal if present
-        const existingModal = document.querySelector('.slider-modal');
-        if (existingModal) {
-            document.body.removeChild(existingModal);
-        }
+    // Preload images for smoother initial display
+    const preloadImages = async (images) => {
+        // Preload the first 10 images with high priority (visible in initial view)
+        const criticalImages = images.slice(0, 10);
+        const otherImages = images.slice(10);
         
-        // Create modal container
-        const modal = document.createElement('div');
-        modal.className = 'slider-modal';
-        modal.style.position = 'fixed';
-        modal.style.top = '0';
-        modal.style.left = '0';
-        modal.style.right = '0';
-        modal.style.bottom = '0';
-        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
-        modal.style.display = 'flex';
-        modal.style.justifyContent = 'center';
-        modal.style.alignItems = 'center';
-        modal.style.zIndex = '9999';
-        modal.style.opacity = '0';
-        modal.style.transition = 'opacity 0.3s ease';
-        
-        // Close button
-        const closeBtn = document.createElement('button');
-        closeBtn.innerHTML = '&times;';
-        closeBtn.style.position = 'absolute';
-        closeBtn.style.top = '20px';
-        closeBtn.style.right = '25px';
-        closeBtn.style.fontSize = '35px';
-        closeBtn.style.background = 'none';
-        closeBtn.style.border = 'none';
-        closeBtn.style.color = 'white';
-        closeBtn.style.cursor = 'pointer';
-        
-        modal.appendChild(closeBtn);
-        
-        // Handle closing
-        const closeModal = () => {
-            modal.style.opacity = '0';
-            setTimeout(() => {
-                if (document.body.contains(modal)) {
-                    document.body.removeChild(modal);
-                }
-            }, 300);
-        };
-        
-        closeBtn.addEventListener('click', closeModal);
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                closeModal();
-            }
+        // Load critical images first with Promise.all
+        const criticalPromises = criticalImages.map(image => {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false); // Continue even if loading fails
+                img.src = `images/${image}`;
+            });
         });
         
-        return { modal, closeModal };
+        await Promise.all(criticalPromises);
+        
+        // Then start loading the remaining images in the background
+        otherImages.forEach(image => {
+            const img = new Image();
+            img.src = `images/${image}`;
+        });
     };
     
-    // Generate a set of slider items
-    const generateSliderItems = (container, imageSet) => {
-        imageSet.forEach((img, index) => {
+    // Add images to a slider
+    const populateSlider = (containerId, images) => {
+        const container = document.getElementById(containerId);
+        if (!container) {
+            console.error(`Container ${containerId} not found`);
+            return;
+        }
+        
+        container.innerHTML = '';
+        
+        images.forEach((image, index) => {
             const item = document.createElement('div');
             item.className = 'vertical-slider-item';
             
-            const imgElement = document.createElement('img');
-            imgElement.src = `images/${img}`;
-            imgElement.alt = `Nail Design ${index + 1}`;
-            imgElement.loading = 'eager'; // Eager loading for faster initial loading
-            imgElement.setAttribute('fetchpriority', 'high'); // High fetch priority
-            imgElement.dataset.index = index;
+            const img = document.createElement('img');
+            img.src = `images/${image}`;
+            img.alt = `Nail Design ${index + 1}`;
+            img.loading = 'eager';
+            img.decoding = 'async'; // Use async decoding to improve performance
+            img.setAttribute('fetchpriority', 'high'); // Set high priority for initial images
             
-            item.appendChild(imgElement);
+            // Add size hints to help browser allocate space before image loads
+            img.width = img.height = 140;
+            
+            // Add image load error handling
+            img.onerror = () => {
+                console.warn(`Failed to load image: ${image}`);
+                img.src = 'images/IMG_9914.PNG'; // Fallback to a default image
+            };
+            item.appendChild(img);
             container.appendChild(item);
+        });
+        
+        // Set animation direction based on slider
+        const isLeftSlider = container.parentElement.classList.contains('left-slider');
+        container.style.animation = isLeftSlider ? 
+            'scrollDown 36.85s linear infinite' :
+            'scrollUp 36.85s linear infinite';
+    };
+    
+    // Initialize sliders
+    const initSliders = async () => {
+        try {
+            // Get images
+            const images = await getImages();
             
-            // Add click event to open image in modal
-            imgElement.addEventListener('click', function() {
-                const { modal, closeModal } = createModal();
+            // Preload images before displaying them
+            await preloadImages(images);
+            
+            // Create shuffled sets for each slider
+            const leftImages = shuffleArray(images);
+            const rightImages = shuffleArray(images);
+            
+            // Duplicate images for continuous scrolling
+            const leftImageSet = [...leftImages, ...leftImages.slice(0, 10)];
+            const rightImageSet = [...rightImages, ...rightImages.slice(0, 10)];
+            
+            // Populate sliders
+            populateSlider('leftSliderContainer', leftImageSet);
+            populateSlider('rightSliderContainer', rightImageSet);
+            
+            // Add hover pause effect
+            document.querySelectorAll('.vertical-slider-container').forEach(container => {
+                container.addEventListener('mouseenter', () => {
+                    container.style.animationPlayState = 'paused';
+                });
                 
-                const modalImg = document.createElement('img');
-                modalImg.src = this.src;
-                modalImg.style.maxWidth = '80%';
-                modalImg.style.maxHeight = '80%';
-                modalImg.style.borderRadius = '8px';
-                modalImg.style.boxShadow = '0 5px 25px rgba(0, 0, 0, 0.3)';
-                modalImg.style.border = '3px solid rgba(255, 255, 255, 0.2)';
-                
-                modal.appendChild(modalImg);
-                document.body.appendChild(modal);
-                
-                // Fade in animation
-                setTimeout(() => {
-                    modal.style.opacity = '1';
-                }, 50);
-                
-                // Close on ESC key
-                document.addEventListener('keydown', function escClose(e) {
-                    if (e.key === 'Escape') {
-                        closeModal();
-                        document.removeEventListener('keydown', escClose);
-                    }
+                container.addEventListener('mouseleave', () => {
+                    container.style.animationPlayState = 'running';
                 });
             });
-        });
-    };
-    
-    // Create duplicate container for seamless infinite scrolling
-    const setupInfiniteScroll = (sliderContainer) => {
-        // Clear existing clones first
-        const parent = sliderContainer.parentNode;
-        Array.from(parent.children).forEach(child => {
-            if (child !== sliderContainer && !child.id) {
-                parent.removeChild(child);
-            }
-        });
-        
-        // Clone the container
-        const clone = sliderContainer.cloneNode(true);
-        
-        // Remove any ID to avoid duplicates
-        clone.removeAttribute('id');
-        
-        // Ensure proper positioning
-        clone.style.position = 'absolute';
-        clone.style.top = '100%';
-        clone.style.left = '0';
-        clone.style.width = '100%';
-        
-        // Append to parent
-        sliderContainer.parentNode.appendChild(clone);
-    };
-    
-    // Initialize sliders after preloading images
-    preloadImages().then(() => {
-        // Remove loading spinner
-        removeLoadingSpinner(loadingSpinner);
-        
-        const leftImages = shuffleArray([...images]);
-        const rightImages = shuffleArray([...images]);
-        
-        // Populate left slider
-        const leftSliderContainer = document.getElementById('leftSliderContainer');
-        generateSliderItems(leftSliderContainer, leftImages);
-        // Add just enough duplicates, but not too many
-        generateSliderItems(leftSliderContainer, leftImages.slice(0, 10));
-        
-        // Populate right slider
-        const rightSliderContainer = document.getElementById('rightSliderContainer');
-        generateSliderItems(rightSliderContainer, rightImages);
-        // Add just enough duplicates, but not too many
-        generateSliderItems(rightSliderContainer, rightImages.slice(0, 10));
-        
-        // Set up infinite scroll for both sliders
-        setupInfiniteScroll(leftSliderContainer);
-        setupInfiniteScroll(rightSliderContainer);
-        
-        // Pause animation on hover
-        document.querySelectorAll('.vertical-slider-container').forEach(container => {
-            container.addEventListener('mouseenter', function() {
-                this.style.animationPlayState = 'paused';
-            });
             
-            container.addEventListener('mouseleave', function() {
-                this.style.animationPlayState = 'running';
-            });
-        });
-    });
+            // Remove loading spinner
+            removeLoadingSpinner(loadingSpinner);
+            
+            console.log('Sliders initialized successfully');
+        } catch (error) {
+            console.error('Error initializing sliders:', error);
+            removeLoadingSpinner(loadingSpinner);
+        }
+    };
     
-    // Pause animation on hover
-    document.querySelectorAll('.vertical-slider-container').forEach(container => {
-        container.addEventListener('mouseenter', function() {
-            this.style.animationPlayState = 'paused';
-        });
-        
-        container.addEventListener('mouseleave', function() {
-            this.style.animationPlayState = 'running';
-        });
-    });
+    // Initialize immediately
+    initSliders();
+    
+    // Set up event listener for gallery updates
+    window.addEventListener('galleryUpdated', initSliders);
+    
+    // Periodically refresh (every 5 minutes)
+    setInterval(initSliders, 5 * 60 * 1000);
 });

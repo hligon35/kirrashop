@@ -49,6 +49,23 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use('/uploads', express.static('uploads'));
 
+// API endpoint to get all gallery images
+app.get('/api/gallery-images', (req, res) => {
+  try {
+    const imagesDir = path.join(__dirname, 'public', 'images');
+    const files = fs.readdirSync(imagesDir);
+    // Filter for image files only
+    const imageFiles = files.filter(file => {
+      const ext = path.extname(file).toLowerCase();
+      return ['.png', '.jpg', '.jpeg', '.gif', '.webp'].includes(ext);
+    });
+    res.json(imageFiles);
+  } catch (error) {
+    console.error('Error reading gallery images:', error);
+    res.status(500).json({ error: 'Failed to read gallery images' });
+  }
+});
+
 // In-memory storage (replace with database in production)
 let appointments = [];
 let customers = [];
