@@ -6,6 +6,26 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const multer = require('multer');
 
+// Import test credentials for easy testing
+let testCredentials;
+try {
+  testCredentials = require('./test-credentials');
+  console.log('Test credentials loaded successfully');
+} catch (error) {
+  console.log('No test credentials found, using default credentials');
+  testCredentials = {
+    ADMIN_CREDENTIALS: {
+      phoneNumber: '123-456-7890',
+      password: 'admin123',
+      verificationCode: '123456'
+    },
+    CUSTOMER_CREDENTIALS: {
+      phoneNumber: '987-654-3210',
+      verificationCode: '123456'
+    }
+  };
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 

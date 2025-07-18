@@ -43,10 +43,44 @@ The application has been modularized using the MVC (Model-View-Controller) archi
 
 ## Getting Started
 
-1. Install dependencies:
+### Prerequisites
+- Node.js (v14.x or higher)
+- npm (v6.x or higher)
+
+### Installation Steps
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/hligon35/kirrashop.git
+   cd kirrashop
+   ```
+
+2. Install dependencies:
    ```
    npm install
    ```
+
+3. Start the server:
+   ```
+   node server.js
+   ```
+
+4. Open the application in your browser:
+   ```
+   http://localhost:3000
+   ```
+
+### Test Credentials
+
+For testing purposes, you can use these credentials:
+
+- **Admin Login:**
+  - Phone: 123-456-7890
+  - Password: admin123
+
+- **Customer Login:**
+  - Phone: 987-654-3210
+  - Verification Code: 123456 (static for testing)
 
 2. Start the server:
    ```
